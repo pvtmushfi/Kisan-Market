@@ -1,59 +1,70 @@
-import axios from "axios";
+import { useContext } from "react";
+
+import { CartContext } from "../context/CartContext";
+import { OrderContext } from "../context/OrderContext";
 
 function PaymentButton({ amount }) {
 
-  const handlePayment = async () => {
-    try {
+  const { cart, clearCart } =
+    useContext(CartContext);
 
-      // Create order from backend
-      const { data } = await axios.post(
-        "http://localhost:5000/api/payment/create-order",
-        {
-          amount,
-        }
-      );
+  const { addOrder } =
+    useContext(OrderContext);
 
-      // Razorpay options
-      const options = {
-        key: "rzp_test_SnzgBv270hFwYq",
+  const handlePayment = () => {
 
-        amount: data.amount,
+    const options = {
 
-        currency: data.currency,
+      key: "rzp_test_SnzgBv270hFwYq",
 
-        name: "Kisan Market",
+      amount: amount * 100,
 
-        description: "Farm Product Payment",
+      currency: "INR",
 
-        order_id: data.id,
+      name: "KisanMarket",
 
-        handler: function (response) {
-          alert("Payment Successful!");
-          console.log(response);
-        },
+      description: "Product Payment",
 
-        theme: {
-          color: "#16a34a",
-        },
-      };
+      handler: function (response) {
 
-      const razor = new window.Razorpay(options);
+        // Create Order
+        const order = {
+          id: Date.now(),
+          items: cart,
+          paymentMethod: "Razorpay",
+          paymentId: response.razorpay_payment_id,
+          status: "Paid",
+          createdAt: new Date().toLocaleString()
+        };
 
-      razor.open();
+        // Save Order
+        addOrder(order);
 
-    } catch (error) {
-      console.log(error);
+        // Clear Cart
+        clearCart();
 
-      alert("Payment Failed");
-    }
+        alert(
+          "Payment Successful! Order Placed."
+        );
+      },
+
+      theme: {
+        color: "#16a34a"
+      }
+    };
+
+    const razorpay =
+      new window.Razorpay(options);
+
+    razorpay.open();
   };
 
   return (
     <button
       onClick={handlePayment}
-      className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
+      className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition"
     >
-      Pay Now
+      Pay with Razorpay
     </button>
   );
 }

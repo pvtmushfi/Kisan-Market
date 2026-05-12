@@ -1,194 +1,204 @@
 import { useContext } from "react";
-import { CartContext } from "../context/CartContext";
-import { AuthContext } from "../context/AuthContext";
 
-import Button from "../components/Button";
-import PaymentButton from "../components/PaymentButton";
+import { OrderContext } from "../context/OrderContext";
 
 function Orders() {
-  const { cart } = useContext(CartContext);
-  const { user } = useContext(AuthContext);
 
-  // Redirect if not logged in
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-green-600 text-white py-8 px-6">
-          <h1 className="text-3xl font-bold">Your Orders</h1>
-        </div>
-
-        <div className="max-w-6xl mx-auto p-6">
-          <div className="bg-white rounded-lg p-8 text-center shadow">
-            <p className="text-xl text-gray-600 mb-4">
-              Please login to continue.
-            </p>
-
-            <Button
-              text="Login"
-              onClick={() => (window.location.href = "/login")}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Total Amount
-  const totalAmount = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const { orders } =
+    useContext(OrderContext);
 
   return (
+
     <div className="min-h-screen bg-gray-50">
 
       {/* Header */}
-      <div className="bg-green-600 text-white py-8 px-6">
-        <h1 className="text-3xl font-bold">Checkout</h1>
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-10 px-6">
 
-        <p className="mt-2 text-green-100">
-          Welcome {user.name}
-        </p>
+        <div className="max-w-7xl mx-auto">
+
+          <h1 className="text-4xl font-bold">
+            📦 My Orders
+          </h1>
+
+          <p className="mt-2 text-green-100">
+            Track all your purchased products
+          </p>
+
+        </div>
+
       </div>
 
-      <div className="max-w-6xl mx-auto p-6">
+      {/* Content */}
+      <div className="max-w-7xl mx-auto p-6">
 
-        {/* Empty Cart */}
-        {cart.length === 0 ? (
-          <div className="bg-white rounded-lg p-8 text-center shadow">
-            <p className="text-xl text-gray-600 mb-4">
-              Your cart is empty
+        {orders.length === 0 ? (
+
+          <div className="bg-white rounded-2xl shadow-lg p-10 text-center">
+
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
+              alt="empty"
+              className="w-32 mx-auto mb-5"
+            />
+
+            <h2 className="text-2xl font-bold text-gray-700">
+              No Orders Yet
+            </h2>
+
+            <p className="text-gray-500 mt-2">
+              Your placed orders will appear here.
             </p>
 
-            <Button
-              text="Shop Products"
-              onClick={() => (window.location.href = "/products")}
-            />
           </div>
+
         ) : (
-          <>
-            {/* Cart Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
 
-              <table className="w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                <thead className="bg-gray-100 border-b">
-                  <tr>
-                    <th className="px-6 py-4 text-left font-semibold">
-                      Product
-                    </th>
+            {orders
+              .slice()
+              .reverse()
+              .map((order) => (
 
-                    <th className="px-6 py-4 text-left font-semibold">
-                      Price
-                    </th>
+                <div
+                  key={order.id}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100"
+                >
 
-                    <th className="px-6 py-4 text-left font-semibold">
-                      Quantity
-                    </th>
+                  {/* Top */}
+                  <div className="bg-green-600 text-white p-5 flex justify-between items-center">
 
-                    <th className="px-6 py-4 text-left font-semibold">
-                      Total
-                    </th>
+                    <div>
 
-                    <th className="px-6 py-4 text-left font-semibold">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
+                      <h2 className="text-lg font-bold">
+                        Order #{order.id}
+                      </h2>
 
-                <tbody>
-                  {cart.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="border-b hover:bg-gray-50"
+                      <p className="text-sm text-green-100 mt-1">
+                        {order.createdAt}
+                      </p>
+
+                    </div>
+
+                    <div
+                      className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                        order.status === "Paid"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
                     >
+                      {order.status}
+                    </div>
 
-                      {/* Product */}
-                      <td className="px-6 py-4 flex items-center gap-4">
+                  </div>
 
+                  {/* Payment */}
+                  <div className="p-5 border-b">
+
+                    <div className="flex justify-between items-center">
+
+                      <span className="font-medium text-gray-600">
+                        Payment Method
+                      </span>
+
+                      <span className="font-bold text-gray-800">
+                        {order.paymentMethod}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                  {/* Products */}
+                  <div className="p-5 space-y-4">
+
+                    {order.items.map((item) => (
+
+                      <div
+                        key={item.id}
+                        className="flex gap-4 border rounded-xl p-3 hover:shadow-md transition"
+                      >
+
+                        {/* Product Image */}
                         <img
                           src={
                             item.image ||
-                            "https://via.placeholder.com/80"
+                            "https://via.placeholder.com/100"
                           }
                           alt={item.name}
-                          className="w-16 h-16 object-cover rounded"
+                          className="w-24 h-24 rounded-lg object-cover"
                         />
 
-                        <div>
-                          <p className="font-semibold">
-                            {item.name}
-                          </p>
+                        {/* Info */}
+                        <div className="flex-1">
 
-                          <p className="text-sm text-gray-500">
+                          <h3 className="text-lg font-bold text-gray-800">
+                            {item.name}
+                          </h3>
+
+                          <p className="text-gray-500 text-sm mt-1">
                             {item.category}
                           </p>
+
+                          <div className="flex justify-between items-center mt-3">
+
+                            <p className="text-green-600 font-bold text-lg">
+                              ₹{item.price}
+                            </p>
+
+                            <p className="text-sm text-gray-600">
+                              Qty:
+                              <span className="font-semibold ml-1">
+                                {item.quantity}
+                              </span>
+                            </p>
+
+                          </div>
+
                         </div>
-                      </td>
 
-                      {/* Price */}
-                      <td className="px-6 py-4">
-                        ₹{item.price}
-                      </td>
+                      </div>
 
-                      {/* Quantity */}
-                      <td className="px-6 py-4">
-                        {item.quantity}
-                      </td>
+                    ))}
 
-                      {/* Total */}
-                      <td className="px-6 py-4 font-semibold text-green-600">
-                        ₹{item.price * item.quantity}
-                      </td>
+                  </div>
 
-                      {/* Status */}
-                      <td className="px-6 py-4">
-                        <span className="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700">
-                          Pending
-                        </span>
-                      </td>
+                  {/* Footer */}
+                  <div className="bg-gray-50 px-5 py-4 flex justify-between items-center">
 
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                    <span className="font-semibold text-gray-700">
+                      Total Items:
+                      <span className="ml-2 text-black">
+                        {order.items.length}
+                      </span>
+                    </span>
 
-            {/* Checkout Section */}
-            <div className="bg-white rounded-lg shadow mt-8 p-6">
+                    <span className="text-2xl font-bold text-green-600">
 
-              <h2 className="text-2xl font-bold mb-6">
-                Order Summary
-              </h2>
+                      ₹
+                      {order.items.reduce(
+                        (total, item) =>
+                          total +
+                          item.price * item.quantity,
+                        0
+                      )}
 
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-lg">
-                  Total Items
-                </span>
+                    </span>
 
-                <span className="font-semibold">
-                  {cart.length}
-                </span>
-              </div>
+                  </div>
 
-              <div className="flex justify-between items-center mb-6">
-                <span className="text-xl font-bold">
-                  Total Amount
-                </span>
+                </div>
 
-                <span className="text-3xl font-bold text-green-600">
-                  ₹{totalAmount}
-                </span>
-              </div>
+              ))}
 
-              {/* Payment Button */}
-              <PaymentButton amount={totalAmount} />
+          </div>
 
-            </div>
-          </>
         )}
+
       </div>
+
     </div>
+
   );
 }
 

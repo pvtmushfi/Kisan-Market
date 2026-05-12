@@ -1,39 +1,40 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // Load user from localStorage on app start
+  // Load logged-in user on refresh
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem("currentUser");
+
     if (savedUser) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(JSON.parse(savedUser));
     }
   }, []);
 
-  // Save user to localStorage when user changes
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
-  }, [user]);
-
+  // Login
   const login = (userData) => {
     setUser(userData);
+
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify(userData)
+    );
   };
 
+  // Logout
   const logout = () => {
     setUser(null);
+
+    localStorage.removeItem("currentUser");
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

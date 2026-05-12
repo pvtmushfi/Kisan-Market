@@ -1,179 +1,366 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
+
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 
 function Navbar() {
-  const { cart } = useContext(CartContext);
-  const { user, logout } = useContext(AuthContext);
+
+  const cartContext = useContext(CartContext);
+
+  const authContext = useContext(AuthContext);
+
+  const cart = cartContext?.cart || [];
+
+  const user = authContext?.user || null;
+
+  const logout =
+    authContext?.logout || (() => {});
+
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const [mobileMenuOpen, setMobileMenuOpen] =
+    useState(false);
 
   const handleLogout = () => {
+
     logout();
-    navigate("/");
+
+    setMobileMenuOpen(false);
+
+    navigate("/login");
+  };
+
+  const closeMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   return (
-    <nav className="sticky top-0 z-50 flex justify-between items-center p-4 bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg">
-      <Link to="/" className="text-2xl font-bold hover:opacity-90 transition">
-        🚜 KisanMarket
-      </Link>
+    <nav className="sticky top-0 z-50 bg-gradient-to-r from-green-600 via-green-700 to-green-800 text-white shadow-lg">
 
-      <div className="hidden md:flex gap-6 items-center">
-        <NavLink
+      {/* Top Navbar */}
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
+
+        {/* Logo */}
+        <Link
           to="/"
-          end
-          className={({ isActive }) =>
-            `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-          }
+          onClick={closeMenu}
+          className="flex items-center gap-3"
         >
-          Home
-        </NavLink>
-        <NavLink
-          to="/products"
-          className={({ isActive }) =>
-            `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-          }
-        >
-          Products
-        </NavLink>
 
-        {user?.role === "farmer" && (
-          <>
-            <NavLink
-              to="/farmer"
-              className={({ isActive }) =>
-                `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-              }
-            >
-              Dashboard
-            </NavLink>
-            <NavLink
-              to="/my-products"
-              className={({ isActive }) =>
-                `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-              }
-            >
-              My Products
-            </NavLink>
-          </>
-        )}
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2909/2909762.png"
+            alt="logo"
+            className="w-12 h-12 rounded-full bg-white p-1 shadow-md"
+          />
 
-        {user?.role === "vendor" && (
-          <span className="text-sm opacity-75">🛒 Vendor</span>
-        )}
+          <div>
+            <h1 className="text-2xl font-bold tracking-wide">
+              KisanMarket
+            </h1>
 
-        {user?.role === "vendor" && (
-          <NavLink
-            to="/cart"
-            className={({ isActive }) =>
-              `relative hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-            }
-          >
-            🛒 Cart
-            {cart.length > 0 && (
-              <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {cart.length}
-              </span>
-            )}
-          </NavLink>
-        )}
+            <p className="text-xs text-green-100">
+              Fresh From Farmers 🌾
+            </p>
+          </div>
 
-        <Link to="/chat" className="hover:opacity-90 transition">AI Chat</Link>
-        {user && (
-          <Link to="/orders" className="hover:opacity-90 transition">Orders</Link>
-        )}
+        </Link>
 
-        {user ? (
-          <>
-            <span className="text-sm">
-              Hi, {user.name} ({user.role})
-            </span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="hover:opacity-90 transition">Login</Link>
-            <Link to="/register" className="bg-white text-green-600 px-4 py-2 rounded font-medium hover:opacity-90 transition">Register</Link>
-          </>
-        )}
-      </div>
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-6">
 
-      <div className="md:hidden">
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-2xl">
-          ☰
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-green-700 p-4 space-y-2 md:hidden">
           <NavLink
             to="/"
-            end
-            className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+            className={({ isActive }) =>
+              isActive
+                ? "text-yellow-300 font-bold"
+                : "hover:text-yellow-200 transition"
+            }
           >
             Home
           </NavLink>
+
           <NavLink
             to="/products"
-            className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+            className={({ isActive }) =>
+              isActive
+                ? "text-yellow-300 font-bold"
+                : "hover:text-yellow-200 transition"
+            }
           >
             Products
           </NavLink>
 
+          {/* Vendor */}
+          {user?.role === "vendor" && (
+            <NavLink
+              to="/cart"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-yellow-300 font-bold relative"
+                  : "hover:text-yellow-200 transition relative"
+              }
+            >
+              🛒 Cart
+
+              {cart?.length > 0 && (
+                <span className="absolute -top-2 -right-4 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {cart?.length}
+                </span>
+              )}
+            </NavLink>
+          )}
+
+          {/* Orders */}
+          {user && (
+            <NavLink
+              to="/orders"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-yellow-300 font-bold"
+                  : "hover:text-yellow-200 transition"
+              }
+            >
+              Orders
+            </NavLink>
+          )}
+
+          {/* Farmer */}
           {user?.role === "farmer" && (
             <>
               <NavLink
                 to="/farmer"
-                className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-yellow-300 font-bold"
+                    : "hover:text-yellow-200 transition"
+                }
               >
                 Dashboard
               </NavLink>
+
               <NavLink
                 to="/my-products"
-                className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-yellow-300 font-bold"
+                    : "hover:text-yellow-200 transition"
+                }
               >
                 My Products
               </NavLink>
             </>
           )}
-          {user?.role === "vendor" && (
-            <span className="block text-sm opacity-75">🛒 Vendor Account</span>
+
+          {/* Chat */}
+          <NavLink
+            to="/chat"
+            className={({ isActive }) =>
+              isActive
+                ? "text-yellow-300 font-bold"
+                : "hover:text-yellow-200 transition"
+            }
+          >
+            AI Chat
+          </NavLink>
+
+          {/* User Section */}
+          {user ? (
+            <>
+              {/* Profile Button */}
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg hover:bg-white/20 transition"
+              >
+
+                <img
+                  src={
+                    user?.profilePic ||
+                    "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                  }
+                  alt="profile"
+                  className="w-8 h-8 rounded-full object-cover bg-white"
+                />
+
+                <span className="text-sm font-medium">
+                  {user.name}
+                </span>
+
+              </Link>
+
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                to="/login"
+                className="hover:text-yellow-200 transition"
+              >
+                Login
+              </NavLink>
+
+              <NavLink
+                to="/register"
+                className="bg-white text-green-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
+              >
+                Register
+              </NavLink>
+            </>
           )}
 
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() =>
+            setMobileMenuOpen(!mobileMenuOpen)
+          }
+          className="md:hidden text-3xl"
+        >
+          ☰
+        </button>
+
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+
+        <div className="md:hidden bg-green-700 px-5 py-4 space-y-4 shadow-lg">
+
+          <NavLink
+            to="/"
+            onClick={closeMenu}
+            className="block hover:text-yellow-200"
+          >
+            Home
+          </NavLink>
+
+          <NavLink
+            to="/products"
+            onClick={closeMenu}
+            className="block hover:text-yellow-200"
+          >
+            Products
+          </NavLink>
+
+          {/* Vendor */}
           {user?.role === "vendor" && (
             <NavLink
               to="/cart"
-              className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+              onClick={closeMenu}
+              className="block hover:text-yellow-200"
             >
-              Cart ({cart.length})
+              🛒 Cart ({cart?.length})
             </NavLink>
           )}
+
+          {/* Orders */}
           {user && (
             <NavLink
               to="/orders"
-              className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+              onClick={closeMenu}
+              className="block hover:text-yellow-200"
             >
               Orders
             </NavLink>
           )}
-          {user ? (
-            <button onClick={handleLogout} className="block w-full text-left hover:opacity-90">Logout</button>
-          ) : (
+
+          {/* Farmer */}
+          {user?.role === "farmer" && (
             <>
-              <Link to="/login" className="block hover:opacity-90">Login</Link>
-              <Link to="/register" className="block hover:opacity-90">Register</Link>
+              <NavLink
+                to="/farmer"
+                onClick={closeMenu}
+                className="block hover:text-yellow-200"
+              >
+                Dashboard
+              </NavLink>
+
+              <NavLink
+                to="/my-products"
+                onClick={closeMenu}
+                className="block hover:text-yellow-200"
+              >
+                My Products
+              </NavLink>
             </>
           )}
+
+          {/* Chat */}
+          <NavLink
+            to="/chat"
+            onClick={closeMenu}
+            className="block hover:text-yellow-200"
+          >
+            AI Chat
+          </NavLink>
+
+          {/* Mobile Profile */}
+          {user ? (
+            <>
+              <Link
+                to="/profile"
+                onClick={closeMenu}
+                className="flex items-center gap-3 border-t border-green-500 pt-4"
+              >
+
+                <img
+                  src={
+                    user?.profilePic ||
+                    "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                  }
+                  alt="user"
+                  className="w-10 h-10 rounded-full object-cover bg-white"
+                />
+
+                <div>
+                  <p className="font-semibold">
+                    {user.name}
+                  </p>
+
+                  <p className="text-xs text-green-100">
+                    {user.role}
+                  </p>
+                </div>
+
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg transition"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                to="/login"
+                onClick={closeMenu}
+                className="block hover:text-yellow-200"
+              >
+                Login
+              </NavLink>
+
+              <NavLink
+                to="/register"
+                onClick={closeMenu}
+                className="block bg-white text-green-700 text-center py-2 rounded-lg font-semibold"
+              >
+                Register
+              </NavLink>
+            </>
+          )}
+
         </div>
       )}
+
     </nav>
   );
 }
