@@ -15,6 +15,7 @@ import AddProduct from "./farmer/AddProduct";
 
 import Login from "./auth/Logig";
 import Register from "./auth/Register";
+import IncomeSimulator from "./pages/IncomeSimulator";
 
 import Footer from "./layout/Footer";
 import Navbar from "./layout/Navbar";
@@ -93,6 +94,7 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route path="/simulator" element={<IncomeSimulator />} />
 
                   <Route path="/chat" element={<Chatbot />} />
 

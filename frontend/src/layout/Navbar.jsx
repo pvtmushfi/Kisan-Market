@@ -20,6 +20,7 @@ function Navbar() {
         🚜 KisanMarket
       </Link>
 
+      {/* Desktop Menu */}
       <div className="hidden md:flex gap-6 items-center">
         <NavLink
           to="/"
@@ -30,6 +31,7 @@ function Navbar() {
         >
           Home
         </NavLink>
+
         <NavLink
           to="/products"
           className={({ isActive }) =>
@@ -37,6 +39,16 @@ function Navbar() {
           }
         >
           Products
+        </NavLink>
+
+        {/* Simulator — sabke liye visible */}
+        <NavLink
+          to="/simulator"
+          className={({ isActive }) =>
+            `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
+          }
+        >
+          💰 Simulator
         </NavLink>
 
         {user?.role === "farmer" && (
@@ -81,6 +93,7 @@ function Navbar() {
         )}
 
         <Link to="/chat" className="hover:opacity-90 transition">AI Chat</Link>
+
         {user && (
           <Link to="/orders" className="hover:opacity-90 transition">Orders</Link>
         )}
@@ -100,50 +113,76 @@ function Navbar() {
         ) : (
           <>
             <Link to="/login" className="hover:opacity-90 transition">Login</Link>
-            <Link to="/register" className="bg-white text-green-600 px-4 py-2 rounded font-medium hover:opacity-90 transition">Register</Link>
+            <Link
+              to="/register"
+              className="bg-white text-green-600 px-4 py-2 rounded font-medium hover:opacity-90 transition"
+            >
+              Register
+            </Link>
           </>
         )}
       </div>
 
+      {/* Mobile hamburger button */}
       <div className="md:hidden">
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-2xl">
           ☰
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — sab links yahan andar hain */}
       {mobileMenuOpen && (
         <div className="absolute top-16 left-0 right-0 bg-green-700 p-4 space-y-2 md:hidden">
           <NavLink
             to="/"
             end
-            className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+            className={({ isActive }) =>
+              `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`
+            }
           >
             Home
           </NavLink>
+
           <NavLink
             to="/products"
-            className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+            className={({ isActive }) =>
+              `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`
+            }
           >
             Products
+          </NavLink>
+
+          {/* Simulator mobile */}
+          <NavLink
+            to="/simulator"
+            className={({ isActive }) =>
+              `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`
+            }
+          >
+            💰 Simulator
           </NavLink>
 
           {user?.role === "farmer" && (
             <>
               <NavLink
                 to="/farmer"
-                className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+                className={({ isActive }) =>
+                  `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`
+                }
               >
                 Dashboard
               </NavLink>
               <NavLink
                 to="/my-products"
-                className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+                className={({ isActive }) =>
+                  `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`
+                }
               >
                 My Products
               </NavLink>
             </>
           )}
+
           {user?.role === "vendor" && (
             <span className="block text-sm opacity-75">🛒 Vendor Account</span>
           )}
@@ -151,21 +190,32 @@ function Navbar() {
           {user?.role === "vendor" && (
             <NavLink
               to="/cart"
-              className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+              className={({ isActive }) =>
+                `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`
+              }
             >
               Cart ({cart.length})
             </NavLink>
           )}
+
           {user && (
             <NavLink
               to="/orders"
-              className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+              className={({ isActive }) =>
+                `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`
+              }
             >
               Orders
             </NavLink>
           )}
+
           {user ? (
-            <button onClick={handleLogout} className="block w-full text-left hover:opacity-90">Logout</button>
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left hover:opacity-90"
+            >
+              Logout
+            </button>
           ) : (
             <>
               <Link to="/login" className="block hover:opacity-90">Login</Link>
