@@ -19,7 +19,7 @@ function Products() {
     const fetchProducts = async () => {
       try {
         const response = await getProducts();
-        let fetchedProducts = response.data.data || [];
+        let fetchedProducts = response.data || [];
         
         // Filter by category if specified
         if (category) {

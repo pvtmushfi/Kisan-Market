@@ -4,31 +4,41 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { OrderProvider } from "./context/OrderContext";
 
+// Pages
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Order";
 
+// Farmer Pages
 import FarmerDashboard from "./farmer/FarmerDashboard";
 import MyProducts from "./farmer/MyProduct";
 import AddProduct from "./farmer/AddProduct";
 
-import Login from "./auth/Logig";
+// Auth Pages
+import Login from "./auth/Login";
 import Register from "./auth/Register";
 
+// Layout
 import Footer from "./layout/Footer";
 import Navbar from "./layout/Navbar";
 
+// Components
 import Chatbot from "./components/Chatbot";
+
+// Toast Notifications
+import { Toaster } from "react-hot-toast";
 
 // Protected Route Component
 function ProtectedRoute({ children, allowedRoles }) {
   const user = JSON.parse(localStorage.getItem("user"));
 
+  // User not logged in
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // Role Check
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
@@ -42,13 +52,21 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <OrderProvider>
-            <div className="flex flex-col min-h-screen">
 
+            {/* Toast Notifications */}
+            <Toaster position="top-right" reverseOrder={false} />
+
+            <div className="flex flex-col min-h-screen bg-gray-50">
+
+              {/* Navbar */}
               <Navbar />
 
+              {/* Main Content */}
               <div className="flex-grow">
+
                 <Routes>
 
+                  {/* Public Routes */}
                   <Route path="/" element={<Home />} />
 
                   <Route
@@ -58,6 +76,13 @@ function App() {
 
                   <Route path="/cart" element={<Cart />} />
 
+                  <Route path="/chat" element={<Chatbot />} />
+
+                  <Route path="/login" element={<Login />} />
+
+                  <Route path="/register" element={<Register />} />
+
+                  {/* Protected User Routes */}
                   <Route
                     path="/orders"
                     element={
@@ -67,6 +92,7 @@ function App() {
                     }
                   />
 
+                  {/* Farmer Protected Routes */}
                   <Route
                     path="/farmer"
                     element={
@@ -94,18 +120,21 @@ function App() {
                     }
                   />
 
-                  <Route path="/chat" element={<Chatbot />} />
-
-                  <Route path="/login" element={<Login />} />
-
-                  <Route path="/register" element={<Register />} />
+                  {/* 404 Page Redirect */}
+                  <Route
+                    path="*"
+                    element={<Navigate to="/" replace />}
+                  />
 
                 </Routes>
+
               </div>
 
+              {/* Footer */}
               <Footer />
 
             </div>
+
           </OrderProvider>
         </CartProvider>
       </AuthProvider>

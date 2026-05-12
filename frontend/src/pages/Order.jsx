@@ -5,6 +5,8 @@ import { AuthContext } from "../context/AuthContext";
 import Button from "../components/Button";
 import PaymentButton from "../components/PaymentButton";
 
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' fill='%23e5e7eb'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='12' fill='%236b7280'%3EFarm%3C/text%3E%3C/svg%3E";
+
 function Orders() {
   const { cart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
@@ -107,10 +109,7 @@ function Orders() {
                       <td className="px-6 py-4 flex items-center gap-4">
 
                         <img
-                          src={
-                            item.image ||
-                            "https://via.placeholder.com/80"
-                          }
+                          src={item.image || PLACEHOLDER_IMAGE}
                           alt={item.name}
                           className="w-16 h-16 object-cover rounded"
                         />

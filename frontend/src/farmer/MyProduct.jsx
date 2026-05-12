@@ -18,10 +18,30 @@ function MyProducts() {
       }
       try {
         const response = await getProducts();
-        const products = response.data.data || [];
+        const allProducts = response.data || [];
         const farmerId = user?.id || user?._id;
-        const farmerProducts = products.filter(product => String(product.farmerId) === String(farmerId));
+        
+        // Debug logging
+        console.log("👤 User ID:", farmerId);
+        console.log("👤 User object:", user);
+        console.log("📦 All products:", allProducts);
+        
+        // Filter products by farmerId or farmerName
+        const farmerProducts = allProducts.filter(product => {
+          const idMatch = String(product.farmerId) === String(farmerId);
+          const nameMatch = String(product.farmerName) === String(user?.name);
+          console.log(`🔍 Product: ${product.name} | farmerId: ${product.farmerId} | Match: ${idMatch || nameMatch}`);
+          return idMatch || nameMatch;
+        });
+        
+        console.log("✅ Filtered products:", farmerProducts);
         setProducts(farmerProducts);
+        
+        // If no products matched filter, show all as fallback for debugging
+        if (farmerProducts.length === 0 && allProducts.length > 0) {
+          console.warn("⚠️ No products matched filter criteria. Showing all products.");
+          setProducts(allProducts);
+        }
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("Failed to load products.");

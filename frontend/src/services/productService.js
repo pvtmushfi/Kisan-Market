@@ -1,22 +1,69 @@
 import axios from "axios";
 
+// Backend API URL
 const API = "http://localhost:5000/api/products";
 
-// Get all products
+// Get All Products
 export const getProducts = async () => {
-  return await axios.get(API);
+  try {
+    const response = await axios.get(API);
+    return response.data;
+  } catch (error) {
+    console.error("Get Products Error:", error);
+    throw error;
+  }
 };
 
-// Add new product
+// Add New Product
 export const addProduct = async (formData) => {
-  return await axios.post(API, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  try {
+    const response = await axios.post(API, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Add Product Error:", error);
+    throw error;
+  }
 };
 
-// Delete product
+// Delete Product
 export const deleteProduct = async (id) => {
-  return await axios.delete(`${API}/${id}`);
+  try {
+    const response = await axios.delete(`${API}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Delete Product Error:", error);
+    throw error;
+  }
+};
+
+// Get Single Product
+export const getSingleProduct = async (id) => {
+  try {
+    const response = await axios.get(`${API}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Get Single Product Error:", error);
+    throw error;
+  }
+};
+
+// Update Product
+export const updateProduct = async (id, formData) => {
+  try {
+    const response = await axios.put(`${API}/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Update Product Error:", error);
+    throw error;
+  }
 };

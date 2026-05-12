@@ -1,17 +1,5 @@
 [
   {
-    "id": "1778468724335",
-    "name": "Lady Finger",
-    "description": "Fresh organic lady finger from local farm",
-    "price": 23,
-    "quantity": 10,
-    "unit": "kg",
-    "category": "Vegetables",
-    "farmerName": "Rahul Farmer",
-    "image": "https://unsplash.com/s/photos/lady-finger",
-    "createdAt": "2026-05-11T03:05:24.335Z"
-  },
-  {
     "id": "1778468724336",
     "name": "Tomato",
     "description": "Red fresh tomatoes",
@@ -70,18 +58,6 @@
     "farmerName": "Imran Farmer",
     "image": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce",
     "createdAt": "2026-05-11T03:14:00.000Z"
-  },
-  {
-    "id": "1778468724341",
-    "name": "Banana",
-    "description": "Sweet bananas",
-    "price": 60,
-    "quantity": 30,
-    "unit": "dozen",
-    "category": "Fruits",
-    "farmerName": "Karan Farmer",
-    "image": "https://images.unsplash.com/photo-1574226516831-e1dff420e37f",
-    "createdAt": "2026-05-11T03:15:00.000Z"
   },
   {
     "id": "1778468724342",
