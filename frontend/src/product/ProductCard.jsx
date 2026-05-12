@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import PaymentButton from "../components/PaymentButton";
 
 function ProductCard({ product, onAdd }) {
   const { user } = useContext(AuthContext);
@@ -9,9 +8,7 @@ function ProductCard({ product, onAdd }) {
   const [showDetails, setShowDetails] = useState(false);
 
   const handleQuantityChange = (value) => {
-    if (value >= 1) {
-      setQuantity(value);
-    }
+    if (value >= 1) setQuantity(value);
   };
 
   const handleAddWithQuantity = () => {
@@ -28,33 +25,37 @@ function ProductCard({ product, onAdd }) {
       return (
         <button
           onClick={() => (window.location.href = "/login")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 mt-2 rounded w-full font-medium transition-colors"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 mt-2 rounded w-full font-medium"
         >
           Login to Buy
         </button>
       );
     }
 
+    // 🌾 FARMER VIEW
     if (user.role === "farmer") {
       return (
         <div className="mt-2 space-y-2">
           <button
             onClick={toggleDetails}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full font-medium transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full font-medium"
           >
             {showDetails ? "Hide Details" : "View Details"}
           </button>
 
           <p className="text-sm text-gray-600 text-center">
-            🌾 Farmers sell products
+            🌾 Farmers manage products
           </p>
         </div>
       );
     }
 
+    // 🛒 VENDOR VIEW
     if (user.role === "vendor") {
       return (
         <div className="mt-2 space-y-3">
+
+          {/* Quantity Controls */}
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium text-gray-700">
               Qty:
@@ -62,7 +63,7 @@ function ProductCard({ product, onAdd }) {
 
             <button
               onClick={() => handleQuantityChange(quantity - 1)}
-              className="px-2 py-1 bg-gray-300 hover:bg-gray-400 rounded font-medium"
+              className="px-2 py-1 bg-gray-300 hover:bg-gray-400 rounded"
             >
               −
             </button>
@@ -79,7 +80,7 @@ function ProductCard({ product, onAdd }) {
 
             <button
               onClick={() => handleQuantityChange(quantity + 1)}
-              className="px-2 py-1 bg-gray-300 hover:bg-gray-400 rounded font-medium"
+              className="px-2 py-1 bg-gray-300 hover:bg-gray-400 rounded"
             >
               +
             </button>
@@ -88,21 +89,26 @@ function ProductCard({ product, onAdd }) {
           {/* Add to Cart */}
           <button
             onClick={handleAddWithQuantity}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full font-medium transition-colors"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full font-medium"
           >
             Add to Cart
           </button>
 
-          {/* Razorpay Payment */}
-          <PaymentButton amount={product.price * quantity} />
+          {/* 🔥 REPLACED PAYMENT BUTTON */}
+          <button
+            onClick={toggleDetails}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full font-medium"
+          >
+            View Details
+          </button>
         </div>
       );
     }
   };
 
   return (
-    <div className="border border-gray-200 p-4 rounded-lg shadow hover:shadow-lg transition-shadow bg-white">
-      
+    <div className="border border-gray-200 p-4 rounded-lg shadow hover:shadow-lg bg-white">
+
       {/* Product Image */}
       <img
         src={
@@ -113,7 +119,7 @@ function ProductCard({ product, onAdd }) {
         className="h-40 w-full object-cover rounded mb-3"
       />
 
-      {/* Product Name */}
+      {/* Name */}
       <h2 className="font-bold text-lg mb-1">
         {product.name}
       </h2>
@@ -123,12 +129,13 @@ function ProductCard({ product, onAdd }) {
         ₹{product.price}
       </p>
 
-      {/* Buttons */}
+      {/* Actions */}
       {renderActionButton()}
 
-      {/* Farmer Details */}
-      {showDetails && user && user.role === "farmer" && (
-        <div className="mt-4 p-3 bg-gray-50 rounded">
+      {/* 📦 DETAILS SECTION */}
+      {showDetails && user && (
+        <div className="mt-4 p-3 bg-gray-50 rounded text-sm space-y-1">
+
           <p>
             <strong>Description:</strong>{" "}
             {product.description || "No description available"}
