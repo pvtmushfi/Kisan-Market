@@ -44,7 +44,7 @@ function ProductCard({ product, onAdd }) {
           </button>
 
           <p className="text-sm text-gray-600 text-center">
-            🌾 Farmers manage products
+            🌾 Farmer Product Management View
           </p>
         </div>
       );
@@ -94,7 +94,7 @@ function ProductCard({ product, onAdd }) {
             Add to Cart
           </button>
 
-          {/* 🔥 REPLACED PAYMENT BUTTON */}
+          {/* View Details */}
           <button
             onClick={toggleDetails}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full font-medium"
@@ -109,27 +109,32 @@ function ProductCard({ product, onAdd }) {
   return (
     <div className="border border-gray-200 p-4 rounded-lg shadow hover:shadow-lg bg-white">
 
-      {/* Product Image */}
+      {/* IMAGE */}
       <img
         src={
           product.image ||
-          "https://via.placeholder.com/300x200?text=Farm+Product"
+          "https://via.placeholder.com/300x200?text=Kisan+Market"
         }
         alt={product.name}
         className="h-40 w-full object-cover rounded mb-3"
       />
 
-      {/* Name */}
+      {/* NAME */}
       <h2 className="font-bold text-lg mb-1">
         {product.name}
       </h2>
 
-      {/* Price */}
-      <p className="text-green-600 font-semibold mb-3">
-        ₹{product.price}
+      {/* CATEGORY BADGE */}
+      <p className="text-xs text-white bg-green-500 inline-block px-2 py-1 rounded mb-2">
+        {product.category || "Farm Product"}
       </p>
 
-      {/* Actions */}
+      {/* PRICE */}
+      <p className="text-green-600 font-semibold mb-3">
+        ₹{product.price} / {product.unit}
+      </p>
+
+      {/* ACTIONS */}
       {renderActionButton()}
 
       {/* 📦 DETAILS SECTION */}
@@ -142,7 +147,7 @@ function ProductCard({ product, onAdd }) {
           </p>
 
           <p>
-            <strong>Quantity:</strong>{" "}
+            <strong>Quantity Available:</strong>{" "}
             {product.quantity} {product.unit}
           </p>
 
@@ -151,12 +156,18 @@ function ProductCard({ product, onAdd }) {
           </p>
 
           <p>
-            <strong>Available:</strong>{" "}
-            {product.available ? "Yes" : "No"}
+            <strong>Farmer:</strong> {product.farmerName}
           </p>
 
           <p>
-            <strong>Farmer:</strong> {product.farmerName}
+            <strong>Product ID:</strong> {product.id || product._id}
+          </p>
+
+          <p>
+            <strong>Added On:</strong>{" "}
+            {product.createdAt
+              ? new Date(product.createdAt).toLocaleDateString()
+              : "N/A"}
           </p>
         </div>
       )}
