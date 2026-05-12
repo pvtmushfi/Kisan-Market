@@ -13,7 +13,9 @@ function Profile() {
   useEffect(() => {
 
     const savedUser =
-      JSON.parse(localStorage.getItem("currentUser"));
+      JSON.parse(
+        localStorage.getItem("currentUser")
+      );
 
     if (savedUser) {
       setUser(savedUser);
@@ -28,6 +30,7 @@ function Profile() {
       ...user,
       [e.target.name]: e.target.value
     });
+
   };
 
   // Upload Image From Local System
@@ -36,6 +39,16 @@ function Profile() {
     const file = e.target.files[0];
 
     if (!file) return;
+
+    // Limit image size to 1MB
+    if (file.size > 1024 * 1024) {
+
+      alert(
+        "Please upload image smaller than 1MB"
+      );
+
+      return;
+    }
 
     const reader = new FileReader();
 
@@ -47,123 +60,183 @@ function Profile() {
       };
 
       setUser(updatedUser);
+
     };
 
     reader.readAsDataURL(file);
+
   };
 
   // Save Changes
   const handleSave = () => {
 
+    // Prevent huge images
+    if (
+      user.profilePic &&
+      user.profilePic.length > 200000
+    ) {
+
+      alert(
+        "Image size is too large. Please choose a smaller image."
+      );
+
+      return;
+    }
+
+    // Save Current User
     localStorage.setItem(
       "currentUser",
       JSON.stringify(user)
     );
 
-    // ALSO UPDATE LOGIN USER
+    // Update Logged In User
     localStorage.setItem(
       "user",
       JSON.stringify(user)
     );
 
-    alert("Profile Updated Successfully!");
+    // Update User Inside Users Array
+    const users =
+      JSON.parse(
+        localStorage.getItem("users")
+      ) || [];
+
+    const updatedUsers =
+      users.map((u) => {
+
+        if (u.email === user.email) {
+          return user;
+        }
+
+        return u;
+
+      });
+
+    localStorage.setItem(
+      "users",
+      JSON.stringify(updatedUsers)
+    );
+
+    alert(
+      "Profile Updated Successfully!"
+    );
+
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4">
 
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-10 px-4">
 
-        <h1 className="text-3xl font-bold text-green-700 mb-8 text-center">
-          My Profile
-        </h1>
+      <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
 
-        {/* Profile Image */}
-        <div className="flex flex-col items-center mb-8">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-green-600 to-green-800 p-8 text-center text-white">
 
-          <img
-            src={
-              user.profilePic ||
-              "https://cdn-icons-png.flaticon.com/512/847/847969.png"
-            }
-            alt="profile"
-            className="w-36 h-36 rounded-full object-cover border-4 border-green-500 shadow-md"
-          />
+          <h1 className="text-4xl font-bold">
+            My Profile
+          </h1>
 
-          <label className="mt-5 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg cursor-pointer transition">
+          <p className="mt-2 text-green-100">
+            Manage your account details
+          </p>
 
-            Upload Profile Picture
+        </div>
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
+        <div className="p-8">
+
+          {/* Profile Image */}
+          <div className="flex flex-col items-center mb-10">
+
+            <img
+              src={
+                user.profilePic ||
+                "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+              }
+              alt="profile"
+              className="w-40 h-40 rounded-full object-cover border-4 border-green-500 shadow-lg"
             />
 
-          </label>
+            <label className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl cursor-pointer transition font-medium shadow-md">
+
+              Upload Profile Picture
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+
+            </label>
+
+            <p className="text-sm text-gray-500 mt-3">
+              Maximum image size: 1MB
+            </p>
+
+          </div>
+
+          {/* Name */}
+          <div className="mb-6">
+
+            <label className="block font-semibold mb-2 text-gray-700">
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              name="name"
+              value={user.name}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+
+          </div>
+
+          {/* Email */}
+          <div className="mb-6">
+
+            <label className="block font-semibold mb-2 text-gray-700">
+              Email
+            </label>
+
+            <input
+              type="email"
+              name="email"
+              value={user.email}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+
+          </div>
+
+          {/* Role */}
+          <div className="mb-8">
+
+            <label className="block font-semibold mb-2 text-gray-700">
+              Role
+            </label>
+
+            <input
+              type="text"
+              value={user.role}
+              disabled
+              className="w-full border border-gray-300 rounded-xl p-4 bg-gray-100 text-gray-500"
+            />
+
+          </div>
+
+          {/* Save Button */}
+          <button
+            onClick={handleSave}
+            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 rounded-xl font-bold text-lg transition shadow-lg"
+          >
+            Save Changes
+          </button>
 
         </div>
-
-        {/* Name */}
-        <div className="mb-5">
-
-          <label className="block font-semibold mb-2">
-            Full Name
-          </label>
-
-          <input
-            type="text"
-            name="name"
-            value={user.name}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500"
-          />
-
-        </div>
-
-        {/* Email */}
-        <div className="mb-5">
-
-          <label className="block font-semibold mb-2">
-            Email
-          </label>
-
-          <input
-            type="email"
-            name="email"
-            value={user.email}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500"
-          />
-
-        </div>
-
-        {/* Role */}
-        <div className="mb-8">
-
-          <label className="block font-semibold mb-2">
-            Role
-          </label>
-
-          <input
-            type="text"
-            value={user.role}
-            disabled
-            className="w-full border border-gray-300 rounded-lg p-3 bg-gray-100"
-          />
-
-        </div>
-
-        {/* Save Button */}
-        <button
-          onClick={handleSave}
-          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition"
-        >
-          Save Changes
-        </button>
 
       </div>
+
     </div>
   );
 }
