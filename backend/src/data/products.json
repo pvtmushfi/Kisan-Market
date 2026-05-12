@@ -1,0 +1,98 @@
+[
+  {
+    "id": "1778468724335",
+    "name": "Lady Finger",
+    "description": "Fresh organic lady finger from local farm",
+    "price": 23,
+    "quantity": 10,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Rahul Farmer",
+    "image": "https://unsplash.com/s/photos/lady-finger",
+    "createdAt": "2026-05-11T03:05:24.335Z"
+  },
+  {
+    "id": "1778468724336",
+    "name": "Tomato",
+    "description": "Red fresh tomatoes",
+    "price": 40,
+    "quantity": 20,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Amit Farmer",
+    "image": "https://images.unsplash.com/photo-1546094096-0df4bcaaa337",
+    "createdAt": "2026-05-11T03:10:00.000Z"
+  },
+  {
+    "id": "1778468724337",
+    "name": "Potato",
+    "description": "Farm fresh potatoes",
+    "price": 30,
+    "quantity": 50,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Suresh Farmer",
+    "image": "https://images.unsplash.com/photo-1518977676601-b53f82aba655",
+    "createdAt": "2026-05-11T03:11:00.000Z"
+  },
+  {
+    "id": "1778468724338",
+    "name": "Onion",
+    "description": "Fresh onions directly from farm",
+    "price": 35,
+    "quantity": 40,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Ravi Farmer",
+    "image": "https://images.unsplash.com/photo-1508747703725-719777637510",
+    "createdAt": "2026-05-11T03:12:00.000Z"
+  },
+  {
+    "id": "1778468724339",
+    "name": "Carrot",
+    "description": "Healthy organic carrots",
+    "price": 50,
+    "quantity": 15,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Ankit Farmer",
+    "image": "https://images.unsplash.com/photo-1447175008436-054170c2e979",
+    "createdAt": "2026-05-11T03:13:00.000Z"
+  },
+  {
+    "id": "1778468724340",
+    "name": "Apple",
+    "description": "Fresh Kashmir apples",
+    "price": 120,
+    "quantity": 25,
+    "unit": "kg",
+    "category": "Fruits",
+    "farmerName": "Imran Farmer",
+    "image": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce",
+    "createdAt": "2026-05-11T03:14:00.000Z"
+  },
+  {
+    "id": "1778468724341",
+    "name": "Banana",
+    "description": "Sweet bananas",
+    "price": 60,
+    "quantity": 30,
+    "unit": "dozen",
+    "category": "Fruits",
+    "farmerName": "Karan Farmer",
+    "image": "https://images.unsplash.com/photo-1574226516831-e1dff420e37f",
+    "createdAt": "2026-05-11T03:15:00.000Z"
+  },
+  {
+    "id": "1778468724342",
+    "name": "Mango",
+    "description": "Juicy Alphonso mangoes",
+    "price": 150,
+    "quantity": 18,
+    "unit": "kg",
+    "category": "Fruits",
+    "farmerName": "Salim Farmer",
+    "image": "https://images.unsplash.com/photo-1553279768-865429fa0078",
+    "createdAt": "2026-05-11T03:16:00.000Z"
+  }
+]
