@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import FarmMap from './components/FarmMap';
+import SetFarmLocation from './components/SetFarmLocation';
+
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { OrderProvider } from "./context/OrderContext";
@@ -13,7 +16,7 @@ import FarmerDashboard from "./farmer/FarmerDashboard";
 import MyProducts from "./farmer/MyProduct";
 import AddProduct from "./farmer/AddProduct";
 
-import Login from "./auth/Logig";
+import Login from './auth/Login.jsx';
 import Register from "./auth/Register";
 import IncomeSimulator from "./pages/IncomeSimulator";
 
@@ -95,6 +98,10 @@ function App() {
                     }
                   />
                   <Route path="/simulator" element={<IncomeSimulator />} />
+
+
+                  <Route path="/farm-map" element={<FarmMap />} />
+<Route path="/set-location" element={<SetFarmLocation />} />
 
                   <Route path="/chat" element={<Chatbot />} />
 

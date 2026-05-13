@@ -1,3 +1,4 @@
+import VoiceProductForm from "../components/VoiceProductForm";
 import { useState, useContext } from "react";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -7,6 +8,7 @@ import { addProduct } from "../services/productService";
 function AddProduct() {
   const [form, setForm] = useState({ name: "", price: "", description: "", quantity: "" });
   const [loading, setLoading] = useState(false);
+  const [showVoiceForm, setShowVoiceForm] = useState(false);
   const { token, user } = useContext(AuthContext);
 
   const handleChange = (e) => {
@@ -53,6 +55,22 @@ function AddProduct() {
       
       <div className="max-w-2xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-lg p-8">
+          <button
+  onClick={() => setShowVoiceForm(true)}
+  className="mb-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+>
+  🎤 बोलकर उत्पाद जोड़ें
+</button>
+
+{showVoiceForm && (
+  <VoiceProductForm
+    onClose={() => setShowVoiceForm(false)}
+    onSuccess={() => {
+      setShowVoiceForm(false);
+      alert("Voice product added successfully!");
+    }}
+  />
+)}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>

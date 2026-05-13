@@ -6,11 +6,26 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ['farmer', 'consumer', 'admin'], default: 'consumer' },
+    role: {
+      type: String,
+      enum: ['farmer', 'consumer', 'vendor', 'admin'],
+      default: 'consumer'
+    },
     avatar: { type: String },
+    // ✅ LOCATION – no defaults at all
+    location: {
+      type: {
+        type: String,
+        enum: ['Point']
+      },
+      coordinates: [Number]
+    }
   },
   { timestamps: true }
 );
+
+// ✅ Sparse index – only when location exists
+userSchema.index({ location: '2dsphere' }, { sparse: true });
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

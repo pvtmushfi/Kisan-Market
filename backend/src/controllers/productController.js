@@ -1,64 +1,52 @@
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import Product from '../models/Product.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dataPath = path.resolve(__dirname, '../data/products.json');
-
-const readProducts = async () => {
-  try {
-    const content = await fs.readFile(dataPath, 'utf8');
-    return JSON.parse(content || '[]');
-  } catch (error) {
-    return [];
-  }
-};
-
-const writeProducts = async (products) => {
-  await fs.writeFile(dataPath, JSON.stringify(products, null, 2), 'utf8');
-};
-
+// Get all products (public)
 export const getProducts = async (req, res) => {
-  const products = await readProducts();
-  res.json({ data: products });
+  try {
+    const products = await Product.find().populate('farmer', 'name');
+    res.json({ data: products });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
+// Add product (only farmer, from token)
 export const addProduct = async (req, res) => {
-  const { name, price, description, quantity, unit, category, farmerId, farmerName } = req.body;
-  if (!name || price === undefined || quantity === undefined) {
-    return res.status(400).json({ error: 'Name, price, and quantity are required' });
+  try {
+    const { name, price, quantity, category, description, unit } = req.body;
+    if (!name || price === undefined || quantity === undefined) {
+      return res.status(400).json({ error: 'Name, price, and quantity are required' });
+    }
+
+    const product = await Product.create({
+      name,
+      price: Number(price),
+      quantity: Number(quantity),
+      category: category || 'vegetable',
+      description: description || '',
+      unit: unit || 'kg',
+      farmer: req.user.id,
+      farmerName: req.user.name,
+      available: true
+    });
+
+    res.status(201).json({ data: product });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  const products = await readProducts();
-  const newProduct = {
-    id: Date.now().toString(),
-    name,
-    description: description || '',
-    price: Number(price),
-    quantity: Number(quantity),
-    unit: unit || 'kg',
-    category: category || 'Other',
-    farmerId: farmerId || null,
-    farmerName: farmerName || 'Unknown farmer',
-    image: req.file ? `/uploads/products/${req.file.filename}` : null,
-    createdAt: new Date().toISOString()
-  };
-
-  products.push(newProduct);
-  await writeProducts(products);
-
-  res.status(201).json({ data: newProduct });
 };
 
+// Delete product (only the farmer who owns it)
 export const deleteProduct = async (req, res) => {
-  const { id } = req.params;
-  const products = await readProducts();
-  const productIndex = products.findIndex(p => p.id === id);
-  if (productIndex === -1) {
-    return res.status(404).json({ error: 'Product not found' });
+  try {
+    const { id } = req.params;
+    const product = await Product.findOne({ _id: id, farmer: req.user.id });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found or unauthorized' });
+    }
+    await product.deleteOne();
+    res.json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  products.splice(productIndex, 1);
-  await writeProducts(products);
-  res.json({ message: 'Product deleted successfully' });
 };

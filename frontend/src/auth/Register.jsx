@@ -1,12 +1,17 @@
-import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import Input from "../components/Input";
-import Button from "../components/Button";
-import { AuthContext } from "../context/AuthContext";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { register } from '../services/authService';
 
 function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "", role: "vendor" });
-  const { login } = useContext(AuthContext);
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: 'consumer'
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -17,31 +22,35 @@ function Register() {
     setForm({ ...form, role });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
-      alert("Please fill all fields");
+      setError('Please fill all fields');
       return;
     }
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      setError('Passwords do not match');
       return;
     }
 
-    // Simulate registration
-    const userData = {
-      id: Date.now(),
-      name: form.name,
-      email: form.email,
-      role: form.role
-    };
+    setLoading(true);
 
-    console.log("Register:", form);
-    alert(`Registration successful as ${form.role}!`);
-
-    // Auto-login after registration
-    login(userData);
-    navigate("/");
+    try {
+      await register({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+      });
+      alert(`Registration successful as ${form.role}!`);
+      navigate('/login');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,21 +60,26 @@ function Register() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-            <Input
+            <input
+              type="text"
               name="name"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
               placeholder="Enter your full name"
               value={form.name}
               onChange={handleChange}
+              required
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <Input
+            <input
               type="email"
               name="email"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
               placeholder="Enter your email"
               value={form.email}
               onChange={handleChange}
+              required
             />
           </div>
 
@@ -87,40 +101,53 @@ function Register() {
               </button>
               <button
                 type="button"
-                onClick={() => handleRoleChange("vendor")}
+                onClick={() => handleRoleChange("consumer")}
                 className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all ${
-                  form.role === "vendor"
+                  form.role === "consumer"
                     ? "border-green-600 bg-green-50 text-green-700"
                     : "border-gray-300 hover:border-green-400"
                 }`}
               >
-                🛒 Vendor
-                <div className="text-xs mt-1 opacity-75">Buy from farmers</div>
+                🛒 Consumer
+                <div className="text-xs mt-1 opacity-75">Buy products</div>
               </button>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <Input
+            <input
               type="password"
               name="password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
               placeholder="Enter your password"
               value={form.password}
               onChange={handleChange}
+              required
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-            <Input
+            <input
               type="password"
               name="confirmPassword"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
               placeholder="Confirm your password"
               value={form.confirmPassword}
               onChange={handleChange}
+              required
             />
           </div>
-          <Button text="Register" className="w-full" />
+
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50"
+          >
+            {loading ? 'Registering...' : 'Register'}
+          </button>
         </form>
         <p className="text-center text-gray-600 mt-4">
           Already have an account? <a href="/login" className="text-green-600 font-bold hover:underline">Login</a>

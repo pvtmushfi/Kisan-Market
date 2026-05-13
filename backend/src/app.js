@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 import orderRoutes from "./routes/orderRoutes.js";
+import farmerRoutes from "./routes/farmerRoutes.js";
 
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", apiLimiter);
 app.use("/api/chat", chatRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/farmers", farmerRoutes);
 
 // Error handler (should be last)
 app.use(errorMiddleware);

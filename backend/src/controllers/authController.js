@@ -20,8 +20,20 @@ export async function register(req, res) {
 
 export async function login(req, res) {
   const { email, password } = req.body;
+  console.log("🔐 Login attempt for email:", email);
+
   const user = await User.findOne({ email });
-  if (user && (await user.matchPassword(password))) {
+  if (!user) {
+    console.log("❌ User not found in database");
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+  console.log("✅ User found:", user.email);
+
+  const isMatch = await user.matchPassword(password);
+  console.log("🔑 Password match result:", isMatch);
+
+  if (isMatch) {
+    console.log("✅ Login successful, generating token...");
     return res.json({
       _id: user._id,
       name: user.name,
@@ -29,8 +41,10 @@ export async function login(req, res) {
       role: user.role,
       token: generateToken(user),
     });
+  } else {
+    console.log("❌ Password mismatch");
+    res.status(401).json({ message: 'Invalid credentials' });
   }
-  res.status(401).json({ message: 'Invalid credentials' });
 }
 
 export async function me(req, res) {
