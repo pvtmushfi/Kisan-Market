@@ -1,259 +1,86 @@
 import { useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
-
 import { AuthContext } from "../context/AuthContext";
 
 function Login() {
-
-  const [form, setForm] = useState({
-    email: "",
-    password: ""
-  });
-
-  const { login } =
-    useContext(AuthContext);
-
+  const [form, setForm] = useState({ email: "", password: "" });
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Handle Input Change
   const handleChange = (e) => {
-
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
-
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Handle Login
   const handleSubmit = (e) => {
-
     e.preventDefault();
-
     if (!form.email || !form.password) {
-
       alert("Please fill all fields");
-
       return;
     }
 
-    // Get Saved Users
-    const users =
-      JSON.parse(
-        localStorage.getItem("users")
-      ) || [];
+    // Simulate login - in real app, this would be an API call
+    // For demo purposes, we'll create a mock user based on email
+    const mockUsers = {
+      "farmer@example.com": { id: 1, name: "John Farmer", email: "farmer@example.com", role: "farmer" },
+      "vendor@example.com": { id: 2, name: "Jane Vendor", email: "vendor@example.com", role: "vendor" }
+    };
 
-    // Find User
-    const user = users.find(
-      (u) =>
-        u.email === form.email &&
-        u.password === form.password
-    );
+    const user = mockUsers[form.email];
 
     if (user) {
-
-      // Save Logged User
-      localStorage.setItem(
-        "user",
-        JSON.stringify(user)
-      );
-
-      // Save Current User
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify(user)
-      );
-
-      // Login Context
+      console.log("Login:", form);
+      alert(`Login successful as ${user.role}!`);
       login(user);
-
-      alert("Login successful!");
-
       navigate("/");
-
     } else {
-
-      alert("Invalid email or password");
-
+      alert("Invalid credentials. Try farmer@example.com or vendor@example.com with any password.");
     }
   };
 
   return (
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-6 text-center text-green-600">Login</h2>
 
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-white to-green-50 flex items-center justify-center p-4">
-
-      <div className="bg-white shadow-2xl rounded-3xl overflow-hidden w-full max-w-5xl grid md:grid-cols-2">
-
-        {/* Left Side */}
-        <div className="hidden md:flex flex-col justify-center bg-gradient-to-br from-green-600 to-green-800 text-white p-10">
-
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/2909/2909762.png"
-            alt="logo"
-            className="w-28 h-28 mb-6"
-          />
-
-          <h1 className="text-5xl font-bold leading-tight">
-            Welcome Back
-          </h1>
-
-          <p className="mt-6 text-green-100 text-lg leading-relaxed">
-            Login to continue buying fresh products
-            directly from farmers using KisanMarket 🌾
-          </p>
-
-          <div className="mt-10">
-
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl">🚜</span>
-              <p>Fresh farm products</p>
-            </div>
-
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl">💳</span>
-              <p>Secure Razorpay payments</p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">📦</span>
-              <p>Track your orders easily</p>
-            </div>
-
+        {/* Demo Credentials */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <h3 className="text-sm font-semibold text-blue-800 mb-2">Demo Credentials:</h3>
+          <div className="text-xs text-blue-700 space-y-1">
+            <div><strong>Farmer:</strong> farmer@example.com</div>
+            <div><strong>Vendor:</strong> vendor@example.com</div>
+            <div><em>Password: any password</em></div>
           </div>
-
         </div>
 
-        {/* Right Side */}
-        <div className="p-8 md:p-12">
-
-          {/* Mobile Logo */}
-          <div className="md:hidden text-center mb-6">
-
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/2909/2909762.png"
-              alt="logo"
-              className="w-20 h-20 mx-auto mb-4"
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <Input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={form.email}
+              onChange={handleChange}
             />
-
-            <h1 className="text-3xl font-bold text-green-700">
-              KisanMarket
-            </h1>
-
           </div>
-
-          {/* Heading */}
-          <div className="mb-8">
-
-            <h2 className="text-4xl font-bold text-gray-800">
-              Login
-            </h2>
-
-            <p className="text-gray-500 mt-2">
-              Access your account and continue shopping
-            </p>
-
-          </div>
-
-          {/* Demo Credentials */}
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
-
-            <h3 className="text-sm font-bold text-blue-800 mb-2">
-              Demo Credentials
-            </h3>
-
-            <div className="text-sm text-blue-700 space-y-1">
-
-              <p>
-                <strong>Farmer:</strong>
-                {" "}
-                farmer@example.com
-              </p>
-
-              <p>
-                <strong>Vendor:</strong>
-                {" "}
-                vendor@example.com
-              </p>
-
-              <p>
-                <strong>Password:</strong>
-                {" "}
-                any password
-              </p>
-
-            </div>
-
-          </div>
-
-          {/* Form */}
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5"
-          >
-
-            {/* Email */}
-            <div>
-
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-              </label>
-
-              <Input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                value={form.email}
-                onChange={handleChange}
-              />
-
-            </div>
-
-            {/* Password */}
-            <div>
-
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-              </label>
-
-              <Input
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                value={form.password}
-                onChange={handleChange}
-              />
-
-            </div>
-
-            {/* Login Button */}
-            <Button
-              text="Login"
-              className="w-full"
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <Input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={form.password}
+              onChange={handleChange}
             />
-
-          </form>
-
-          {/* Register */}
-          <p className="text-center text-gray-600 mt-8">
-
-            Don&apos;t have an account?
-
-            <Link
-              to="/register"
-              className="text-green-600 font-bold hover:underline ml-1"
-            >
-              Register
-            </Link>
-
-          </p>
-
-        </div>
-
+          </div>
+          <Button text="Login" className="w-full" />
+        </form>
+        <p className="text-center text-gray-600 mt-4">
+          Don't have an account? <a href="/register" className="text-green-600 font-bold hover:underline">Register</a>
+        </p>
       </div>
-
     </div>
   );
 }

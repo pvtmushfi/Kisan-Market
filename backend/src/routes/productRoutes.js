@@ -1,20 +1,57 @@
 import express from "express";
-import fs from "fs";
+import multer from "multer";
 import path from "path";
+
+import {
+  getProducts,
+  addProduct,
+  deleteProduct,
+} from "../controllers/productController.js";
 
 const router = express.Router();
 
-const filePath = path.resolve("src/data/products.json");
+// Multer Storage Config
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "src/uploads/products");
+  },
 
-// GET products from JSON file
-router.get("/", (req, res) => {
-  try {
-    const data = fs.readFileSync(filePath, "utf-8");
-    const products = JSON.parse(data);
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ message: "Error reading products file" });
-  }
+  filename: (req, file, cb) => {
+    const uniqueName =
+      Date.now() + path.extname(file.originalname);
+
+    cb(null, uniqueName);
+  },
 });
+
+// File Filter
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|webp/;
+
+  const isValid = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+
+  if (isValid) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed"));
+  }
+};
+
+// Upload Middleware
+const upload = multer({
+  storage,
+  fileFilter,
+});
+
+// Routes
+router.get("/", getProducts);
+
+// Add Product with Image Upload
+router.post("/", upload.single("image"), addProduct);
+
+// Delete Product
+router.delete("/:id", deleteProduct);
 
 export default router;

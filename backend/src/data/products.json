@@ -59,7 +59,6 @@
     "image": "https://images.unsplash.com/photo-1447175008436-054170c2e979",
     "createdAt": "2026-05-11T03:13:00.000Z"
   },
-
   {
     "id": "1778468724340",
     "name": "Apple",
@@ -73,18 +72,6 @@
     "createdAt": "2026-05-11T03:14:00.000Z"
   },
   {
-    "id": "1778468724341",
-    "name": "Banana",
-    "description": "Sweet bananas",
-    "price": 60,
-    "quantity": 30,
-    "unit": "dozen",
-    "category": "Fruits",
-    "farmerName": "Karan Farmer",
-    "image": "https://images.unsplash.com/photo-1574226516831-e1dff420e37f",
-    "createdAt": "2026-05-11T03:15:00.000Z"
-  },
-  {
     "id": "1778468724342",
     "name": "Mango",
     "description": "Juicy Alphonso mangoes",
@@ -96,7 +83,6 @@
     "image": "https://images.unsplash.com/photo-1553279768-865429fa0078",
     "createdAt": "2026-05-11T03:16:00.000Z"
   },
-
   {
     "id": "1778468724343",
     "name": "Grapes",
@@ -121,7 +107,6 @@
     "image": "https://images.unsplash.com/photo-1542838132-92c53300491e",
     "createdAt": "2026-05-11T03:18:00.000Z"
   },
-
   {
     "id": "1778468724345",
     "name": "Spinach",
@@ -134,7 +119,6 @@
     "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb",
     "createdAt": "2026-05-11T03:19:00.000Z"
   },
-
   {
     "id": "1778468724346",
     "name": "Cabbage",

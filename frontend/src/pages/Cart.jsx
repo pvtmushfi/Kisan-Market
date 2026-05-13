@@ -8,6 +8,8 @@ import { OrderContext } from "../context/OrderContext";
 import Button from "../components/Button";
 import PaymentButton from "../components/PaymentButton";
 
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='300' height='200' fill='%23e5e7eb'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='18' fill='%236b7280'%3EFarm Product%3C/text%3E%3C/svg%3E";
+
 function Cart() {
   const navigate = useNavigate();
 
@@ -124,8 +126,9 @@ function Cart() {
                 >
 
                   <img
-                    src={item.image || "https://via.placeholder.com/300"}
-                    className="h-44 w-full object-cover rounded"
+                    src={item.image || PLACEHOLDER_IMAGE}
+                    alt={item.name}
+                    className="w-full h-48 object-cover rounded"
                   />
 
                   <h2 className="text-lg font-bold mt-2">

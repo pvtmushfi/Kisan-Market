@@ -1,7 +1,10 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 
-function ProductCard({ product, onAdd }) {
+const API_BASE_URL = "http://localhost:5000";
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='300' height='200' fill='%23e5e7eb'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='18' fill='%236b7280'%3EFarm Product%3C/text%3E%3C/svg%3E";
+
+function ProductCard({ product, onAdd, onDelete }) {
   const { user } = useContext(AuthContext);
 
   const [quantity, setQuantity] = useState(1);
@@ -20,6 +23,28 @@ function ProductCard({ product, onAdd }) {
     setShowDetails(!showDetails);
   };
 
+  const handleDeleteClick = () => {
+    if (onDelete) {
+      const confirm = window.confirm(
+        `Are you sure you want to delete "${product.name}"?`
+      );
+      if (confirm) {
+        onDelete(product.id || product._id);
+      }
+    }
+  };
+  // Helper function to get full image URL
+  const getImageUrl = () => {
+    if (!product.image) {
+      return PLACEHOLDER_IMAGE;
+    }
+    // If image path starts with /, prepend backend URL
+    if (product.image.startsWith('/')) {
+      return `${API_BASE_URL}${product.image}`;
+    }
+    // Otherwise return as is
+    return product.image;
+  };
   const renderActionButton = () => {
     if (!user) {
       return (
@@ -42,6 +67,15 @@ function ProductCard({ product, onAdd }) {
           >
             {showDetails ? "Hide Details" : "View Details"}
           </button>
+
+          {onDelete && (
+            <button
+              onClick={handleDeleteClick}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full font-medium"
+            >
+              🗑️ Delete Product
+            </button>
+          )}
 
           <p className="text-sm text-gray-600 text-center">
             🌾 Farmer Product Management View
@@ -111,12 +145,12 @@ function ProductCard({ product, onAdd }) {
 
       {/* IMAGE */}
       <img
-        src={
-          product.image ||
-          "https://via.placeholder.com/300x200?text=Kisan+Market"
-        }
+        src={getImageUrl()}
         alt={product.name}
         className="h-40 w-full object-cover rounded mb-3"
+        onError={(e) => {
+          e.target.src = PLACEHOLDER_IMAGE;
+        }}
       />
 
       {/* NAME */}
@@ -124,22 +158,47 @@ function ProductCard({ product, onAdd }) {
         {product.name}
       </h2>
 
-      {/* CATEGORY BADGE */}
-      <p className="text-xs text-white bg-green-500 inline-block px-2 py-1 rounded mb-2">
-        {product.category || "Farm Product"}
-      </p>
+      {/* Price & Discount */}
+      <div className="mb-3">
+        <div className="flex items-center gap-2">
+          <p className="text-green-600 font-semibold text-lg">
+            ₹{product.price}
+          </p>
+          {product.discount > 0 && (
+            <span className="bg-red-500 text-white px-2 py-1 rounded text-sm font-bold">
+              {product.discount}% OFF
+            </span>
+          )}
+        </div>
+      </div>
 
-      {/* PRICE */}
-      <p className="text-green-600 font-semibold mb-3">
-        ₹{product.price} / {product.unit}
-      </p>
+      {/* Stock Status Badge */}
+      <div className="mb-3">
+        <span
+          className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+            product.available
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {product.available ? "✓ In Stock" : "Out of Stock"}
+        </span>
+      </div>
 
       {/* ACTIONS */}
       {renderActionButton()}
 
       {/* 📦 DETAILS SECTION */}
       {showDetails && user && (
-        <div className="mt-4 p-3 bg-gray-50 rounded text-sm space-y-1">
+        <div className="mt-4 p-3 bg-gray-50 rounded text-sm space-y-2">
+
+          {/* Product ID */}
+          <p>
+            <strong>Product ID:</strong>{" "}
+            <span className="font-mono text-blue-600">
+              {product.productId || product.id}
+            </span>
+          </p>
 
           <p>
             <strong>Description:</strong>{" "}
@@ -152,12 +211,33 @@ function ProductCard({ product, onAdd }) {
           </p>
 
           <p>
-            <strong>Category:</strong> {product.category}
+            <strong>Category:</strong>
+            <span className="ml-1 bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
+              {product.category}
+            </span>
           </p>
 
           <p>
-            <strong>Farmer:</strong> {product.farmerName}
+            <strong>Stock Status:</strong>{" "}
+            <span
+              className={`font-semibold ${
+                product.available
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {product.available ? "✓ In Stock" : "✗ Out of Stock"}
+            </span>
           </p>
+
+          {product.discount > 0 && (
+            <p>
+              <strong>Discount Offer:</strong>
+              <span className="ml-1 bg-red-100 text-red-700 px-2 py-1 rounded font-bold">
+                {product.discount}%
+              </span>
+            </p>
+          )}
 
           <p>
             <strong>Product ID:</strong> {product.id || product._id}

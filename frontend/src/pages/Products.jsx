@@ -11,8 +11,15 @@ function Products() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products");
-        setProducts(res.data);
+        const response = await getProducts();
+        let fetchedProducts = response.data || [];
+        
+        // Filter by category if specified
+        if (category) {
+          fetchedProducts = fetchedProducts.filter(p => p.category === category);
+        }
+        
+        setProducts(fetchedProducts);
       } catch (err) {
         console.log(err);
       }
