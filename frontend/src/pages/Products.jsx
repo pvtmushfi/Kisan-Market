@@ -1,148 +1,182 @@
-import { useContext, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { useEffect, useState, useContext } from "react";
+import axios from "axios";
 import { CartContext } from "../context/CartContext";
-import { getProducts } from "../services/productService";
-import ProductList from "../product/ProductList";
 
 function Products() {
   const [products, setProducts] = useState([]);
-  const [recommended, setRecommended] = useState([]);
-  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { addToCart } = useContext(CartContext);
 
-  const [searchParams] = useSearchParams();
-  const { user } = useContext(AuthContext);
-  const { cart, setCart } = useContext(CartContext);
-
-  const category = searchParams.get("category");
-
-  // ================= FETCH PRODUCTS =================
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await getProducts();
-        let fetchedProducts = response.data.data || [];
-
-        if (category) {
-          fetchedProducts = fetchedProducts.filter(
-            (p) => p.category === category
-          );
-        }
-
-        setProducts(fetchedProducts);
+        const res = await axios.get("http://localhost:5000/api/products");
+        setProducts(res.data);
       } catch (err) {
-        console.error(err);
-        setError("Failed to load products");
-      } finally {
-        setLoading(false);
+        console.log(err);
       }
     };
 
     fetchProducts();
-  }, [category]);
+  }, []);
 
-  // ================= ADD TO CART =================
-  const handleAdd = (product, quantity = 1) => {
-    if (!user || user.role !== "vendor") return;
-
-    const productId = product._id || product.id;
-
-    const existingItem = cart.find(
-      (item) => (item._id || item.id) === productId
-    );
-
-    let updatedCart;
-
-    if (existingItem) {
-      updatedCart = cart.map((item) =>
-        (item._id || item.id) === productId
-          ? { ...item, quantity: item.quantity + quantity }
-          : item
-      );
-    } else {
-      updatedCart = [...cart, { ...product, quantity }];
-    }
-
-    setCart(updatedCart);
-
-    alert(`${product.name} added to cart`);
-
-    // ================= GENERATE RECOMMENDATION =================
-    const lastAddedCategory = product.category;
-
-    const recommendedProducts = products
-      .filter(
+  const recommendedProducts = selectedProduct
+    ? products.filter(
         (p) =>
-          p.category === lastAddedCategory &&
-          p.id !== product.id
+          p.category === selectedProduct.category &&
+          p.id !== selectedProduct.id
       )
-      .slice(0, 4);
-
-    setRecommended(recommendedProducts);
-
-    // 🔥 SHOW ONLY AFTER ADD TO CART
-    setShowRecommendations(true);
-  };
-
-  // ================= UI TEXT =================
-  const getPageTitle = () => {
-    if (category) return `${category} - Fresh from Farmers`;
-    if (!user) return "Fresh Products from Farmers";
-    if (user.role === "farmer") return "Farmer Market Dashboard";
-    if (user.role === "vendor") return "Buy Fresh Farm Products";
-    return "Products";
-  };
-
-  // ================= LOADING =================
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading products...
-      </div>
-    );
-
-  // ================= ERROR =================
-  if (error)
-    return (
-      <div className="min-h-screen flex items-center justify-center text-red-500">
-        {error}
-      </div>
-    );
+    : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="p-6 flex gap-6">
 
-      {/* HEADER */}
-      <div className="bg-green-600 text-white py-8 px-6">
-        <h1 className="text-3xl font-bold">{getPageTitle()}</h1>
+      {/* LEFT SIDE - PRODUCTS */}
+      <div className="w-full">
 
-        {user && (
-          <p className="mt-3 text-green-100 text-sm">
-            Logged in as <strong>{user.name}</strong> ({user.role})
-          </p>
-        )}
+        <h1 className="text-2xl font-bold mb-6">
+          All Products
+        </h1>
+
+        <div className="grid md:grid-cols-3 gap-6">
+
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="border rounded-lg shadow p-4 hover:shadow-lg transition"
+            >
+
+              <img
+                src={
+                  product.image ||
+                  "https://via.placeholder.com/300"
+                }
+                className="h-40 w-full object-cover rounded"
+              />
+
+              <h2 className="font-bold mt-2">
+                {product.name}
+              </h2>
+
+              <p className="text-green-600 font-semibold">
+                ₹{product.price}
+              </p>
+
+              <p className="text-sm text-gray-500">
+                {product.category}
+              </p>
+
+              <div className="flex gap-2 mt-3">
+
+                <button
+                  onClick={() => {
+                    addToCart(product);
+                    setSelectedProduct(product);
+                  }}
+                  className="flex-1 bg-green-600 text-white py-2 rounded"
+                >
+                  Add
+                </button>
+
+                <button
+                  onClick={() => setSelectedProduct(product)}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded"
+                >
+                  Details
+                </button>
+
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* PRODUCTS */}
-      <div className="max-w-7xl mx-auto p-6">
-        <ProductList products={products} onAdd={handleAdd} />
-      </div>
+      {/* RIGHT SIDE - PRODUCT DETAILS PANEL */}
+      {selectedProduct && (
+        <div className="w-[350px] sticky top-20 h-fit border rounded-lg p-4 shadow-lg bg-white">
 
-      {/* ================= RECOMMENDATION (ONLY AFTER ADD) ================= */}
-      {showRecommendations && recommended.length > 0 && (
-        <div className="max-w-7xl mx-auto p-6">
+          <button
+            onClick={() => setSelectedProduct(null)}
+            className="text-red-500 text-sm mb-2"
+          >
+            ✕ Close
+          </button>
 
-          <h2 className="text-2xl font-bold mb-4 text-green-700">
-            🌾 Recommended for You
+          <img
+            src={selectedProduct.image}
+            className="w-full h-48 object-cover rounded"
+          />
+
+          <h2 className="text-xl font-bold mt-3">
+            {selectedProduct.name}
           </h2>
 
-          <ProductList
-            products={recommended}
-            onAdd={handleAdd}
-          />
+          <p className="text-green-600 font-semibold text-lg">
+            ₹{selectedProduct.price}
+          </p>
+
+          <p className="text-gray-600 mt-2">
+            {selectedProduct.description}
+          </p>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Category: {selectedProduct.category}
+          </p>
+
+          <button
+            onClick={() => addToCart(selectedProduct)}
+            className="w-full mt-4 bg-green-600 text-white py-2 rounded"
+          >
+            Add to Cart
+          </button>
+
+          {/* RECOMMENDATIONS */}
+          {recommendedProducts.length > 0 && (
+            <div className="mt-6">
+
+              <h3 className="font-bold mb-2">
+                Similar Products
+              </h3>
+
+              <div className="space-y-2">
+
+                {recommendedProducts.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex gap-2 border p-2 rounded"
+                  >
+
+                    <img
+                      src={item.image}
+                      className="w-12 h-12 object-cover rounded"
+                    />
+
+                    <div className="flex-1">
+
+                      <p className="text-sm font-semibold">
+                        {item.name}
+                      </p>
+
+                      <p className="text-green-600 text-sm">
+                        ₹{item.price}
+                      </p>
+
+                    </div>
+
+                    <button
+                      onClick={() => addToCart(item)}
+                      className="text-xs bg-blue-600 text-white px-2 rounded"
+                    >
+                      Add
+                    </button>
+
+                  </div>
+                ))}
+
+              </div>
+            </div>
+          )}
         </div>
       )}
 

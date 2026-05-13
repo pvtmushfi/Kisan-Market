@@ -1,15 +1,12 @@
 import express from "express";
 import cors from "cors";
-import morgan from "morgan";
 import helmet from "helmet";
-<<<<<<< HEAD
-import orderRoutes from "./routes/orderRoutes.js";
-import farmerRoutes from "./routes/farmerRoutes.js";
-=======
+import morgan from "morgan";
 import dotenv from "dotenv";
-dotenv.config();
->>>>>>> origin/main
 
+dotenv.config();
+
+import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
@@ -20,36 +17,32 @@ import { apiLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 
-// Security + middleware
+// middleware
 app.use(helmet());
 app.use(cors());
-app.use(express.json({ limit: "5mb" }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logging
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-// Health check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", time: new Date().toISOString() });
-});
+// rate limiter BEFORE routes
+app.use("/api", apiLimiter);
 
-// Routes
+// routes
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/upload", uploadRoutes);
-<<<<<<< HEAD
-app.use("/api/farmers", farmerRoutes);
-=======
-app.use("/api/orders", orderRoutes);
->>>>>>> origin/main
 
-// Rate limiter (apply carefully)
-app.use("/api", apiLimiter);
+// health
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
-// Error handler (must be last)
+// error handler last
 app.use(errorMiddleware);
 
 export default app;

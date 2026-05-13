@@ -1,60 +1,27 @@
-import {
-  createContext,
-  useState,
-  useEffect
-} from "react";
+import { createContext, useState } from "react";
 
-export const OrderContext =
-  createContext();
+export const OrderContext = createContext();
 
-export function OrderProvider({
-  children
-}) {
+export function OrderProvider({ children }) {
+  const [orders, setOrders] = useState([]);
 
-  const [orders, setOrders] =
-    useState([]);
+  // ADD ORDER
+  const addOrder = (order) => {
+    setOrders((prev) => [...prev, order]);
+  };
 
-  // Load Orders
-  useEffect(() => {
-
-    const savedOrders =
-      JSON.parse(
-        localStorage.getItem("orders")
-      ) || [];
-
-    setOrders(savedOrders);
-
-  }, []);
-
-  // Save Orders
-  useEffect(() => {
-
-    localStorage.setItem(
-      "orders",
-      JSON.stringify(orders)
+  // UPDATE ORDER STATUS (farmer uses this)
+  const updateOrderStatus = (orderId, status) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId ? { ...o, status } : o
+      )
     );
-
-  }, [orders]);
-
-  // Add Order
-  const addOrder = (orderData) => {
-
-    const newOrder = {
-      ...orderData
-    };
-
-    setOrders((prev) => [
-      ...prev,
-      newOrder
-    ]);
   };
 
   return (
     <OrderContext.Provider
-      value={{
-        orders,
-        addOrder
-      }}
+      value={{ orders, addOrder, updateOrderStatus }}
     >
       {children}
     </OrderContext.Provider>

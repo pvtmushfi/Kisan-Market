@@ -9,89 +9,80 @@ import Button from "../components/Button";
 import PaymentButton from "../components/PaymentButton";
 
 function Cart() {
-
   const navigate = useNavigate();
 
-  const {
-    cart,
-    removeFromCart,
-    clearCart
-  } = useContext(CartContext);
+  const { cart = [], removeFromCart, clearCart } =
+    useContext(CartContext);
 
   const { user } = useContext(AuthContext);
+  const { addOrder } = useContext(OrderContext);
 
-  const { addOrder } =
-    useContext(OrderContext);
+  const [paymentMethod, setPaymentMethod] = useState("cod");
 
-  const [paymentMethod, setPaymentMethod] =
-    useState("cod");
-
-  // Remove Item
-  const removeItem = (id) => {
+  // REMOVE ITEM
+  const handleRemove = (id) => {
     removeFromCart(id);
   };
 
-  // Total Amount
-  const totalAmount = cart.reduce(
-    (total, item) =>
-      total + item.price * item.quantity,
-    0
-  );
+  // TOTAL
+  const totalAmount = cart.reduce((sum, item) => {
+    return sum + (Number(item.price) || 0) * (item.quantity || 1);
+  }, 0);
 
-  // Checkout
+  // CHECKOUT (IMPORTANT FIXED STRUCTURE)
   const handleCheckout = () => {
-
-    if (cart.length === 0) {
+    if (!cart.length) {
       alert("Cart is empty");
       return;
     }
 
+    // Group by farmer (IMPORTANT FOR MARKETPLACE)
+    const farmerId = cart[0]?.farmerId || null;
+
     const order = {
       id: Date.now(),
 
-      items: cart,
+      buyerId: user?.id,
+      buyerName: user?.name,
+
+      farmerId: farmerId,
+
+      items: cart.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity || 1,
+        image: item.image
+      })),
 
       total: totalAmount,
 
       paymentMethod,
+      status: paymentMethod === "cod" ? "Pending" : "Paid",
 
-      status:
-        paymentMethod === "cod"
-          ? "Pending"
-          : "Paid",
-
-      createdAt:
-        new Date().toLocaleString()
+      createdAt: new Date().toISOString(),
     };
 
     addOrder(order);
 
+    // CLEAR CART SAFELY
     clearCart();
 
-    alert(
-      paymentMethod === "cod"
-        ? "Order placed with Cash on Delivery!"
-        : "Payment successful! Order placed."
-    );
+    alert("Order placed successfully!");
 
     navigate("/orders");
   };
 
-  // Not Logged In
+  // NOT LOGGED IN
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow text-center">
-
-          <h2 className="text-2xl font-bold mb-4">
-            Please Login
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white p-6 rounded shadow text-center">
+          <h2 className="text-xl font-bold mb-3">
+            Please login to continue
           </h2>
 
-          <Button
-            text="Login"
-            onClick={() => navigate("/login")}
-          />
-
+          <Button text="Login" onClick={() => navigate("/login")} />
         </div>
       </div>
     );
@@ -100,205 +91,140 @@ function Cart() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* Header */}
-      <div className="bg-green-600 text-white py-8 px-6">
-
-        <h1 className="text-3xl font-bold">
-          Your Cart
-        </h1>
-
-        <p className="mt-2 text-green-100">
-          Review your products before payment
-        </p>
-
+      {/* HEADER */}
+      <div className="bg-green-600 text-white p-6">
+        <h1 className="text-3xl font-bold">Your Cart</h1>
+        <p className="opacity-90">Review your items before checkout</p>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-6xl mx-auto p-6">
 
-        {/* Empty Cart */}
+        {/* EMPTY CART */}
         {cart.length === 0 ? (
-
-          <div className="bg-white p-10 rounded-lg shadow text-center">
-
-            <h2 className="text-2xl font-bold mb-4">
-              Your cart is empty
+          <div className="bg-white p-8 rounded shadow text-center">
+            <h2 className="text-xl font-bold mb-4">
+              Cart is empty
             </h2>
 
             <Button
-              text="Shop Products"
+              text="Browse Products"
               onClick={() => navigate("/products")}
             />
-
           </div>
-
         ) : (
-
           <>
-            {/* Products */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {/* ITEMS */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
 
               {cart.map((item) => (
-
                 <div
                   key={item.id}
-                  className="bg-white rounded-lg shadow p-4"
+                  className="bg-white p-4 rounded shadow"
                 >
 
-                  {/* Image */}
                   <img
-                    src={
-                      item.image ||
-                      "https://via.placeholder.com/300x200"
-                    }
-                    alt={item.name}
-                    className="w-full h-48 object-cover rounded"
+                    src={item.image || "https://via.placeholder.com/300"}
+                    className="h-44 w-full object-cover rounded"
                   />
 
-                  {/* Info */}
-                  <div className="mt-4">
+                  <h2 className="text-lg font-bold mt-2">
+                    {item.name}
+                  </h2>
 
-                    <h2 className="text-xl font-bold">
-                      {item.name}
-                    </h2>
+                  <p className="text-green-600 font-semibold">
+                    ₹{item.price}
+                  </p>
 
-                    <p className="text-gray-500 mt-1">
-                      {item.category}
-                    </p>
+                  <p className="text-sm text-gray-600">
+                    Qty: {item.quantity || 1}
+                  </p>
 
-                    <p className="text-green-600 text-2xl font-bold mt-3">
-                      ₹{item.price}
-                    </p>
+                  <p className="font-bold mt-1">
+                    Total: ₹{(item.price || 0) * (item.quantity || 1)}
+                  </p>
 
-                    <div className="mt-2">
+                  <button
+                    onClick={() => handleRemove(item.id)}
+                    className="w-full mt-3 bg-red-500 text-white py-2 rounded"
+                  >
+                    Remove
+                  </button>
 
-                      <p>
-                        Quantity:
-                        <span className="font-semibold ml-2">
-                          {item.quantity}
-                        </span>
-                      </p>
-
-                      <p className="mt-1">
-                        Total:
-                        <span className="font-bold text-green-700 ml-2">
-                          ₹
-                          {item.price * item.quantity}
-                        </span>
-                      </p>
-
-                    </div>
-
-                    {/* Remove */}
-                    <button
-                      onClick={() =>
-                        removeItem(item.id)
-                      }
-                      className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg transition"
-                    >
-                      Remove Item
-                    </button>
-
-                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Payment */}
-            <div className="bg-white rounded-lg shadow p-6 mt-10">
+            {/* SUMMARY */}
+            <div className="bg-white mt-10 p-6 rounded shadow">
 
-              <h2 className="text-2xl font-bold mb-6">
-                Payment Summary
+              <h2 className="text-2xl font-bold mb-4">
+                Order Summary
               </h2>
 
-              <div className="flex justify-between mb-4">
-
-                <span>Total Products</span>
-
-                <span className="font-semibold">
-                  {cart.length}
-                </span>
-
+              <div className="flex justify-between mb-2">
+                <span>Total Items</span>
+                <span>{cart.length}</span>
               </div>
 
-              <div className="flex justify-between mb-6">
-
-                <span className="text-xl font-bold">
+              <div className="flex justify-between mb-4">
+                <span className="font-bold text-lg">
                   Total Amount
                 </span>
-
-                <span className="text-3xl font-bold text-green-600">
+                <span className="text-green-600 font-bold text-xl">
                   ₹{totalAmount}
                 </span>
-
               </div>
 
-              {/* Payment Options */}
-              <div className="mb-6">
-
-                <h3 className="font-bold mb-3">
-                  Select Payment Method
+              {/* PAYMENT METHOD */}
+              <div className="mb-4">
+                <h3 className="font-semibold mb-2">
+                  Payment Method
                 </h3>
 
-                <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex gap-4">
 
-                  <label className="flex items-center gap-2 border p-3 rounded-lg cursor-pointer">
-
+                  <label>
                     <input
                       type="radio"
                       value="cod"
-                      checked={
-                        paymentMethod === "cod"
-                      }
+                      checked={paymentMethod === "cod"}
                       onChange={(e) =>
-                        setPaymentMethod(
-                          e.target.value
-                        )
+                        setPaymentMethod(e.target.value)
                       }
                     />
-
-                    Cash on Delivery
-
+                    <span className="ml-2">COD</span>
                   </label>
 
-                  <label className="flex items-center gap-2 border p-3 rounded-lg cursor-pointer">
-
+                  <label>
                     <input
                       type="radio"
                       value="online"
-                      checked={
-                        paymentMethod === "online"
-                      }
+                      checked={paymentMethod === "online"}
                       onChange={(e) =>
-                        setPaymentMethod(
-                          e.target.value
-                        )
+                        setPaymentMethod(e.target.value)
                       }
                     />
-
-                    Online Payment
-
+                    <span className="ml-2">Online</span>
                   </label>
 
                 </div>
               </div>
 
-              {/* Checkout Buttons */}
+              {/* CHECKOUT */}
               {paymentMethod === "online" ? (
-
                 <PaymentButton amount={totalAmount} />
-
               ) : (
-
                 <button
                   onClick={handleCheckout}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition"
+                  className="w-full bg-green-600 text-white py-3 rounded font-semibold"
                 >
                   Place Order
                 </button>
-
               )}
 
             </div>
+
           </>
         )}
       </div>

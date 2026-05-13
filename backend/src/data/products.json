@@ -8,7 +8,7 @@
     "unit": "kg",
     "category": "Vegetables",
     "farmerName": "Rahul Farmer",
-    "image": "https://unsplash.com/s/photos/lady-finger",
+    "image": "https://images.unsplash.com/photo-1582515073490-39981397c445",
     "createdAt": "2026-05-11T03:05:24.335Z"
   },
   {
@@ -59,6 +59,7 @@
     "image": "https://images.unsplash.com/photo-1447175008436-054170c2e979",
     "createdAt": "2026-05-11T03:13:00.000Z"
   },
+
   {
     "id": "1778468724340",
     "name": "Apple",
@@ -94,5 +95,56 @@
     "farmerName": "Salim Farmer",
     "image": "https://images.unsplash.com/photo-1553279768-865429fa0078",
     "createdAt": "2026-05-11T03:16:00.000Z"
+  },
+
+  {
+    "id": "1778468724343",
+    "name": "Grapes",
+    "description": "Fresh green grapes",
+    "price": 90,
+    "quantity": 22,
+    "unit": "kg",
+    "category": "Fruits",
+    "farmerName": "Rohit Farmer",
+    "image": "https://images.unsplash.com/photo-1537640538966-79f369143f8f",
+    "createdAt": "2026-05-11T03:17:00.000Z"
+  },
+  {
+    "id": "1778468724344",
+    "name": "Pomegranate",
+    "description": "Organic juicy pomegranates",
+    "price": 140,
+    "quantity": 12,
+    "unit": "kg",
+    "farmerName": "Vikas Farmer",
+    "category": "Fruits",
+    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e",
+    "createdAt": "2026-05-11T03:18:00.000Z"
+  },
+
+  {
+    "id": "1778468724345",
+    "name": "Spinach",
+    "description": "Fresh green spinach leaves",
+    "price": 20,
+    "quantity": 25,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Deepak Farmer",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb",
+    "createdAt": "2026-05-11T03:19:00.000Z"
+  },
+
+  {
+    "id": "1778468724346",
+    "name": "Cabbage",
+    "description": "Fresh cabbage from farm",
+    "price": 25,
+    "quantity": 30,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Arjun Farmer",
+    "image": "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0b",
+    "createdAt": "2026-05-11T03:20:00.000Z"
   }
 ]

@@ -1,14 +1,20 @@
-import express from 'express';
-import { getProducts, addProduct, deleteProduct } from '../controllers/productController.js';
-import { protect } from '../middlewares/authMiddleware.js';
+import express from "express";
+import fs from "fs";
+import path from "path";
 
 const router = express.Router();
 
-// Public route – anyone can see products
-router.get('/', getProducts);
+const filePath = path.resolve("src/data/products.json");
 
-// Protected routes – only logged‑in farmers can add/delete
-router.post('/', protect, addProduct);
-router.delete('/:id', protect, deleteProduct);
+// GET products from JSON file
+router.get("/", (req, res) => {
+  try {
+    const data = fs.readFileSync(filePath, "utf-8");
+    const products = JSON.parse(data);
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ message: "Error reading products file" });
+  }
+});
 
 export default router;

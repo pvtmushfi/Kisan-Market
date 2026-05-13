@@ -1,52 +1,22 @@
-import Product from '../models/Product.js';
+import Product from "../models/Product.js";
 
-// Get all products (public)
+// GET all products
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate('farmer', 'name');
-    res.json({ data: products });
+    const products = await Product.find();
+    res.json(products);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-// Add product (only farmer, from token)
+// ADD product
 export const addProduct = async (req, res) => {
   try {
-    const { name, price, quantity, category, description, unit } = req.body;
-    if (!name || price === undefined || quantity === undefined) {
-      return res.status(400).json({ error: 'Name, price, and quantity are required' });
-    }
-
-    const product = await Product.create({
-      name,
-      price: Number(price),
-      quantity: Number(quantity),
-      category: category || 'vegetable',
-      description: description || '',
-      unit: unit || 'kg',
-      farmer: req.user.id,
-      farmerName: req.user.name,
-      available: true
-    });
-
-    res.status(201).json({ data: product });
+    const product = new Product(req.body);
+    const saved = await product.save();
+    res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// Delete product (only the farmer who owns it)
-export const deleteProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const product = await Product.findOne({ _id: id, farmer: req.user.id });
-    if (!product) {
-      return res.status(404).json({ error: 'Product not found or unauthorized' });
-    }
-    await product.deleteOne();
-    res.json({ message: 'Product deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };

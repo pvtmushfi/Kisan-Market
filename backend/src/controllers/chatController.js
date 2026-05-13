@@ -1,43 +1,66 @@
-import Groq from "groq-sdk";
+import axios from "axios";
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
-export const chatWithAI = async (req, res) => {
+export const chatController = async (req, res) => {
   try {
-    const userMessage = req.body.message;
+    const { message, lang } = req.body;
 
-    if (!userMessage) {
-      return res.status(400).json({ error: "Message required" });
+    if (!message) {
+      return res.status(400).json({ reply: "Message required" });
     }
 
-    const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: `
-You are the official AI assistant for "Kisan Market".
+    const systemPrompt =
+      lang === "hi"
+        ? `
+You are a Kisan (farmer) AI assistant.
 
 RULES:
-- Only answer agriculture/farming/mandi-related questions.
-- If outside topic, reply exactly:
-"I am your only Kisan Market assistant. I cannot help with this request."
-`,
-        },
-        {
-          role: "user",
-          content: userMessage,
-        },
-      ],
-    });
+- Reply ONLY in Hindi (simple Indian Hindi)
+- Do NOT use English words
+- Give practical farming advice
+- At the end ALWAYS add:
+VIDEO: <youtube search keyword in Hindi>
 
-    const reply = response.choices[0].message.content;
+Example:
+गेहूं की खेती के लिए...
+VIDEO: गेहूं की खेती भारत
+`
+        : `
+You are a farming AI assistant.
+
+RULES:
+- Reply ONLY in English
+- Simple farming explanation
+- At end add:
+VIDEO: <youtube search keyword>
+
+Example:
+Wheat farming requires...
+VIDEO: wheat farming India guide
+`;
+
+    const response = await axios.post(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        model: "llama-3.1-8b-instant",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message },
+        ],
+        temperature: 0.3,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const reply = response.data?.choices?.[0]?.message?.content || "";
 
     return res.json({ reply });
-  } catch (error) {
-    console.error("CHAT ERROR:", error);
-    return res.status(500).json({ error: "Chat failed" });
+  } catch (err) {
+    console.log("CHAT ERROR:", err.response?.data || err.message);
+    return res.status(500).json({ reply: "Server error" });
   }
 };

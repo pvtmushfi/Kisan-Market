@@ -1,86 +1,42 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 
 export const CartContext = createContext();
 
-export const CartProvider = ({ children }) => {
-
+export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
 
-  // Load cart from localStorage
-  useEffect(() => {
-    const savedCart =
-      JSON.parse(localStorage.getItem("cart")) || [];
-
-    setCart(savedCart);
-  }, []);
-
-  // Save cart
-  useEffect(() => {
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(cart)
-    );
-  }, [cart]);
-
-  // Add to cart
   const addToCart = (product) => {
+    setCart((prev) => {
+      const existing = prev.find((p) => p.id === product.id);
 
-    const existingItem = cart.find(
-      (item) => item.id === product.id
-    );
+      if (existing) {
+        return prev.map((p) =>
+          p.id === product.id
+            ? { ...p, quantity: p.quantity + 1 }
+            : p
+        );
+      }
 
-    if (existingItem) {
-
-      const updatedCart = cart.map((item) =>
-        item.id === product.id
-          ? {
-              ...item,
-              quantity: item.quantity + 1
-            }
-          : item
-      );
-
-      setCart(updatedCart);
-
-    } else {
-
-      setCart([
-        ...cart,
-        {
-          ...product,
-          quantity: 1
-        }
-      ]);
-    }
+      return [...prev, { ...product, quantity: 1 }];
+    });
   };
 
-  // Remove from cart
-  const removeFromCart = (productId) => {
-
-    const updatedCart = cart.filter(
-      (item) => item.id !== productId
-    );
-
-    setCart(updatedCart);
+  const removeFromCart = (id) => {
+    setCart((prev) => prev.filter((p) => p.id !== id));
   };
 
-  // Clear cart
-  const clearCart = () => {
-    setCart([]);
-    localStorage.removeItem("cart");
-  };
+  const clearCart = () => setCart([]);
 
   return (
     <CartContext.Provider
       value={{
         cart,
-        setCart,
         addToCart,
         removeFromCart,
-        clearCart
+        clearCart,
       }}
     >
       {children}
     </CartContext.Provider>
   );
-};
+}
