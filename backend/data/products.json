@@ -1,6 +1,6 @@
 [
   {
-    "id": "1778468724335",
+    "id": "1",
     "name": "Lady Finger",
     "description": "Fresh organic lady finger from local farm",
     "price": 23,
@@ -9,10 +9,10 @@
     "category": "Vegetables",
     "farmerName": "Rahul Farmer",
     "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a",
-    "createdAt": "2026-05-11T03:05:24.335Z"
+    "createdAt": "2026-05-11"
   },
   {
-    "id": "1778468724336",
+    "id": "2",
     "name": "Tomato",
     "description": "Red fresh tomatoes",
     "price": 40,
@@ -21,10 +21,10 @@
     "category": "Vegetables",
     "farmerName": "Amit Farmer",
     "image": "https://images.unsplash.com/photo-1546094096-0df4bcaaa337",
-    "createdAt": "2026-05-11T03:10:00.000Z"
+    "createdAt": "2026-05-11"
   },
   {
-    "id": "1778468724337",
+    "id": "3",
     "name": "Potato",
     "description": "Farm fresh potatoes",
     "price": 30,
@@ -33,10 +33,10 @@
     "category": "Vegetables",
     "farmerName": "Suresh Farmer",
     "image": "https://images.unsplash.com/photo-1518977676601-b53f82aba655",
-    "createdAt": "2026-05-11T03:11:00.000Z"
+    "createdAt": "2026-05-11"
   },
   {
-    "id": "1778468724338",
+    "id": "4",
     "name": "Onion",
     "description": "Fresh onions directly from farm",
     "price": 35,
@@ -45,22 +45,23 @@
     "category": "Vegetables",
     "farmerName": "Ravi Farmer",
     "image": "https://images.unsplash.com/photo-1508747703725-719777637510",
-    "createdAt": "2026-05-11T03:12:00.000Z"
+    "createdAt": "2026-05-11"
   },
   {
-    "id": "1778468724339",
+    "id": "5",
     "name": "Carrot",
-    "description": "Healthy organic carrots",
+    "description": "Organic fresh carrots",
     "price": 50,
     "quantity": 15,
     "unit": "kg",
     "category": "Vegetables",
     "farmerName": "Ankit Farmer",
     "image": "https://images.unsplash.com/photo-1447175008436-054170c2e979",
-    "createdAt": "2026-05-11T03:13:00.000Z"
+    "createdAt": "2026-05-11"
   },
+
   {
-    "id": "1778468724340",
+    "id": "6",
     "name": "Apple",
     "description": "Fresh Kashmir apples",
     "price": 120,
@@ -69,10 +70,10 @@
     "category": "Fruits",
     "farmerName": "Imran Farmer",
     "image": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce",
-    "createdAt": "2026-05-11T03:14:00.000Z"
+    "createdAt": "2026-05-11"
   },
   {
-    "id": "1778468724341",
+    "id": "7",
     "name": "Banana",
     "description": "Sweet bananas",
     "price": 60,
@@ -81,10 +82,10 @@
     "category": "Fruits",
     "farmerName": "Karan Farmer",
     "image": "https://images.unsplash.com/photo-1574226516831-e1dff420e37f",
-    "createdAt": "2026-05-11T03:15:00.000Z"
+    "createdAt": "2026-05-11"
   },
   {
-    "id": "1778468724342",
+    "id": "8",
     "name": "Mango",
     "description": "Juicy Alphonso mangoes",
     "price": 150,
@@ -93,6 +94,129 @@
     "category": "Fruits",
     "farmerName": "Salim Farmer",
     "image": "https://images.unsplash.com/photo-1553279768-865429fa0078",
-    "createdAt": "2026-05-11T03:16:00.000Z"
+    "createdAt": "2026-05-11"
+  },
+
+  {
+    "id": "9",
+    "name": "Wheat",
+    "description": "High quality wheat grains",
+    "price": 28,
+    "quantity": 100,
+    "unit": "kg",
+    "category": "Grains",
+    "farmerName": "Ramesh Farmer",
+    "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a",
+    "createdAt": "2026-05-11"
+  },
+  {
+    "id": "10",
+    "name": "Rice",
+    "description": "Premium basmati rice",
+    "price": 80,
+    "quantity": 80,
+    "unit": "kg",
+    "category": "Grains",
+    "farmerName": "Shyam Farmer",
+    "image": "https://images.unsplash.com/photo-1603133872878-684f208fb84b",
+    "createdAt": "2026-05-11"
+  },
+
+  {
+    "id": "11",
+    "name": "Turmeric",
+    "description": "Organic turmeric powder",
+    "price": 200,
+    "quantity": 10,
+    "unit": "kg",
+    "category": "Spices",
+    "farmerName": "Ali Farmer",
+    "image": "https://images.unsplash.com/photo-1615485290382-441e4d49f3d0",
+    "createdAt": "2026-05-11"
+  },
+  {
+    "id": "12",
+    "name": "Chili",
+    "description": "Red dried chilies",
+    "price": 180,
+    "quantity": 12,
+    "unit": "kg",
+    "category": "Spices",
+    "farmerName": "Vikram Farmer",
+    "image": "https://images.unsplash.com/photo-1615485290426-7a7f8f3d7a6c",
+    "createdAt": "2026-05-11"
+  },
+
+  {
+    "id": "13",
+    "name": "Milk",
+    "description": "Fresh cow milk",
+    "price": 60,
+    "quantity": 50,
+    "unit": "litre",
+    "category": "Dairy",
+    "farmerName": "Dairy Farmer Group",
+    "image": "https://images.unsplash.com/photo-1550583724-b2692b85b150",
+    "createdAt": "2026-05-11"
+  },
+  {
+    "id": "14",
+    "name": "Paneer",
+    "description": "Fresh homemade paneer",
+    "price": 250,
+    "quantity": 20,
+    "unit": "kg",
+    "category": "Dairy",
+    "farmerName": "Dairy Farmer Group",
+    "image": "https://images.unsplash.com/photo-1604908177522-040e0e6f0dff",
+    "createdAt": "2026-05-11"
+  },
+  {
+    "id": "15",
+    "name": "Cucumber",
+    "description": "Fresh green cucumbers",
+    "price": 20,
+    "quantity": 30,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Raj Farmer",
+    "image": "https://images.unsplash.com/photo-1449300079323-02e209d9d3a6",
+    "createdAt": "2026-05-12"
+  },
+  {
+    "id": "16",
+    "name": "Spinach",
+    "description": "Organic green spinach",
+    "price": 15,
+    "quantity": 25,
+    "unit": "bunch",
+    "category": "Vegetables",
+    "farmerName": "Sunil Farmer",
+    "image": "https://images.unsplash.com/photo-1576045057995-568f588f82fb",
+    "createdAt": "2026-05-12"
+  },
+  {
+    "id": "17",
+    "name": "Grapes",
+    "description": "Sweet black grapes",
+    "price": 90,
+    "quantity": 18,
+    "unit": "kg",
+    "category": "Fruits",
+    "farmerName": "Imran Farmer",
+    "image": "https://images.unsplash.com/photo-1537640538966-79f369143f8f",
+    "createdAt": "2026-05-12"
+  },
+  {
+    "id": "18",
+    "name": "Brinjal (Eggplant)",
+    "description": "Fresh purple brinjal from local farm",
+    "price": 25,
+    "quantity": 20,
+    "unit": "kg",
+    "category": "Vegetables",
+    "farmerName": "Ramesh Farmer",
+    "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a",
+    "createdAt": "2026-05-11T03:09:00.000Z"
   }
 ]

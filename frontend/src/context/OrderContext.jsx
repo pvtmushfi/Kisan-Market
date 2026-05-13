@@ -1,42 +1,61 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useState,
+  useEffect
+} from "react";
 
-export const OrderContext = createContext();
+export const OrderContext =
+  createContext();
 
-export function OrderProvider({ children }) {
-  const [orders, setOrders] = useState([]);
+export function OrderProvider({
+  children
+}) {
 
-  // Load orders from localStorage on app start
+  const [orders, setOrders] =
+    useState([]);
+
+  // Load Orders
   useEffect(() => {
-    const savedOrders = localStorage.getItem('orders');
-    if (savedOrders) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setOrders(JSON.parse(savedOrders));
-    }
+
+    const savedOrders =
+      JSON.parse(
+        localStorage.getItem("orders")
+      ) || [];
+
+    setOrders(savedOrders);
+
   }, []);
 
-  // Save orders to localStorage when orders change
+  // Save Orders
   useEffect(() => {
-    if (orders.length > 0) {
-      localStorage.setItem('orders', JSON.stringify(orders));
-    }
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify(orders)
+    );
+
   }, [orders]);
 
+  // Add Order
   const addOrder = (orderData) => {
+
     const newOrder = {
-      id: `ORD${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
-      items: orderData.items,
-      total: orderData.total,
-      status: "Pending",
-      itemDetails: orderData.itemDetails
+      ...orderData
     };
-    setOrders([...orders, newOrder]);
-    return newOrder;
+
+    setOrders((prev) => [
+      ...prev,
+      newOrder
+    ]);
   };
 
   return (
-    <OrderContext.Provider value={{ orders, setOrders, addOrder }}>
+    <OrderContext.Provider
+      value={{
+        orders,
+        addOrder
+      }}
+    >
       {children}
     </OrderContext.Provider>
   );

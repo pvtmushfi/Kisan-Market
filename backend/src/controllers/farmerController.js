@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import User from '../models/User.js';
 
 // Get farmers within radius (in km)
@@ -37,3 +38,5 @@ export const saveLocation = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+=======
+>>>>>>> origin/main

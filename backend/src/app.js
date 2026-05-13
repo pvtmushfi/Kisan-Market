@@ -2,22 +2,31 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
+<<<<<<< HEAD
 import orderRoutes from "./routes/orderRoutes.js";
 import farmerRoutes from "./routes/farmerRoutes.js";
+=======
+import dotenv from "dotenv";
+dotenv.config();
+>>>>>>> origin/main
 
-import errorMiddleware from "./middlewares/errorMiddleware.js";
+import orderRoutes from "./routes/orderRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+
+import errorMiddleware from "./middlewares/errorMiddleware.js";
 import { apiLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 
+// Security + middleware
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Logging
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
@@ -29,12 +38,18 @@ app.get("/api/health", (req, res) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api", apiLimiter);
 app.use("/api/chat", chatRoutes);
 app.use("/api/upload", uploadRoutes);
+<<<<<<< HEAD
 app.use("/api/farmers", farmerRoutes);
+=======
+app.use("/api/orders", orderRoutes);
+>>>>>>> origin/main
 
-// Error handler (should be last)
+// Rate limiter (apply carefully)
+app.use("/api", apiLimiter);
+
+// Error handler (must be last)
 app.use(errorMiddleware);
 
 export default app;

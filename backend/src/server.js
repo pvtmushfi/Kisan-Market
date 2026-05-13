@@ -1,6 +1,6 @@
 import http from "http";
 import { Server } from "socket.io";
-
+import orderRoutes from "./routes/orderRoutes.js";
 import app from "./app.js";
 import config from "./config/env.js";
 import { connectDB } from "./config/db.js";
@@ -8,6 +8,7 @@ import productRoutes from "./routes/productRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 app.use("/api/products", productRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/orders", orderRoutes);
 const startServer = async () => {
   try {
     // Connect MongoDB

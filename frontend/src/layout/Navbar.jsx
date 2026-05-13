@@ -1,19 +1,38 @@
 import VoiceSearch from '../components/VoiceSearch';
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
+
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 
 function Navbar() {
-  const { cart } = useContext(CartContext);
-  const { user, logout } = useContext(AuthContext);
+
+  const cartContext = useContext(CartContext);
+
+  const authContext = useContext(AuthContext);
+
+  const cart = cartContext?.cart || [];
+
+  const user = authContext?.user || null;
+
+  const logout =
+    authContext?.logout || (() => {});
+
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleLogout = () => {
+
     logout();
-    navigate("/");
+
+    setMobileMenuOpen(false);
+
+    navigate("/login");
+  };
+
+  const closeMenu = () => {
+    setMobileMenuOpen(false);
   };
   const handleSearch = (e) => {
   e.preventDefault();
@@ -366,7 +385,7 @@ function Navbar() {
                 }`
               }
             >
-              Cart ({cart.length})
+              🛒 Cart ({cart?.length})
             </NavLink>
           )}
 
@@ -405,8 +424,76 @@ function Navbar() {
               </Link>
             </>
           )}
+
+          {/* Chat */}
+          <NavLink
+            to="/chat"
+            onClick={closeMenu}
+            className="block hover:text-yellow-200"
+          >
+            AI Chat
+          </NavLink>
+
+          {/* Mobile Profile */}
+          {user ? (
+            <>
+              <Link
+                to="/profile"
+                onClick={closeMenu}
+                className="flex items-center gap-3 border-t border-green-500 pt-4"
+              >
+
+                <img
+                  src={
+                    user?.profilePic ||
+                    "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                  }
+                  alt="user"
+                  className="w-10 h-10 rounded-full object-cover bg-white"
+                />
+
+                <div>
+                  <p className="font-semibold">
+                    {user.name}
+                  </p>
+
+                  <p className="text-xs text-green-100">
+                    {user.role}
+                  </p>
+                </div>
+
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="w-full bg-red-500 hover:bg-red-600 py-2 rounded-lg transition"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                to="/login"
+                onClick={closeMenu}
+                className="block hover:text-yellow-200"
+              >
+                Login
+              </NavLink>
+
+              <NavLink
+                to="/register"
+                onClick={closeMenu}
+                className="block bg-white text-green-700 text-center py-2 rounded-lg font-semibold"
+              >
+                Register
+              </NavLink>
+            </>
+          )}
+
         </div>
       )}
+
     </nav>
   );
 }
