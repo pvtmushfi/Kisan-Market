@@ -1,175 +1,197 @@
+import VoiceSearch from "../components/VoiceSearch";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
+
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 
 function Navbar() {
-  const { cart } = useContext(CartContext);
+  const { cart = [] } = useContext(CartContext);
   const { user, logout } = useContext(AuthContext);
+
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate("/login");
+  };
+
+  const navClass = ({ isActive }) =>
+    `px-3 py-1 rounded-full text-sm transition ${
+      isActive
+        ? "bg-white text-green-700 font-semibold"
+        : "hover:bg-white/10"
+    }`;
+
+  const goProfile = () => navigate("/profile");
+
+  const submitSearch = (e) => {
+    e.preventDefault();
+    if (search.trim()) navigate(`/products?search=${search}`);
   };
 
   return (
-    <nav className="sticky top-0 z-50 flex justify-between items-center p-4 bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg">
-      <Link to="/" className="text-2xl font-bold hover:opacity-90 transition">
-        🚜 KisanMarket
-      </Link>
+    <nav className="sticky top-0 z-50 bg-green-700 text-white shadow-md">
 
-      <div className="hidden md:flex gap-6 items-center">
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) =>
-            `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-          }
+      {/* TOP BAR */}
+      <div className="flex justify-between items-center px-4 py-3">
+
+        {/* LOGO */}
+        <Link to="/" className="text-xl font-bold">
+          KisanMarket
+        </Link>
+
+        {/* SEARCH */}
+        <form
+          onSubmit={submitSearch}
+          className="hidden md:flex bg-white rounded-full overflow-hidden"
         >
-          Home
-        </NavLink>
-        <NavLink
-          to="/products"
-          className={({ isActive }) =>
-            `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-          }
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search products..."
+            className="px-3 py-2 text-black outline-none"
+          />
+
+          <VoiceSearch
+            onSearch={(val) => {
+              setSearch(val);
+              setTimeout(() => submitSearch(new Event("submit")), 0);
+            }}
+          />
+
+          <button className="px-3 bg-yellow-400 text-black">
+            Search
+          </button>
+        </form>
+
+        {/* DESKTOP NAV */}
+        <div className="hidden md:flex items-center gap-2">
+
+          <NavLink to="/" className={navClass}>Home</NavLink>
+          <NavLink to="/products" className={navClass}>Products</NavLink>
+          <NavLink to="/simulator" className={navClass}>Income</NavLink>
+          <NavLink to="/farm-map" className={navClass}>Farm Map</NavLink>
+
+          {user?.role === "vendor" && (
+            <NavLink to="/cart" className={navClass}>
+              Cart ({cart.length})
+            </NavLink>
+          )}
+
+          <Link to="/chat" className="px-3 py-1 rounded-full hover:bg-white/10">
+            Chat
+          </Link>
+
+          {user && (
+            <Link to="/orders" className="px-3 py-1 rounded-full hover:bg-white/10">
+              Orders
+            </Link>
+          )}
+
+          {/* PROFILE BUTTON */}
+          {user ? (
+            <div className="flex items-center gap-2 ml-2">
+
+              <button
+                onClick={goProfile}
+                className="flex items-center gap-2 bg-white text-green-700 px-3 py-1 rounded-full"
+              >
+                <img
+                  src={
+                    user.profilePic ||
+                    "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                  }
+                  className="w-7 h-7 rounded-full"
+                />
+                {user.name}
+              </button>
+
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 px-3 py-1 rounded-full"
+              >
+                Logout
+              </button>
+
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Link to="/login" className="px-3 py-1 rounded-full hover:bg-white/10">
+                Login
+              </Link>
+
+              <Link
+                to="/register"
+                className="bg-white text-green-700 px-3 py-1 rounded-full"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* MOBILE BUTTON */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden text-xl"
         >
-          Products
-        </NavLink>
-
-        {user?.role === "farmer" && (
-          <>
-            <NavLink
-              to="/farmer"
-              className={({ isActive }) =>
-                `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-              }
-            >
-              Dashboard
-            </NavLink>
-            <NavLink
-              to="/my-products"
-              className={({ isActive }) =>
-                `hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-              }
-            >
-              My Products
-            </NavLink>
-          </>
-        )}
-
-        {user?.role === "vendor" && (
-          <span className="text-sm opacity-75">🛒 Vendor</span>
-        )}
-
-        {user?.role === "vendor" && (
-          <NavLink
-            to="/cart"
-            className={({ isActive }) =>
-              `relative hover:opacity-90 transition ${isActive ? "text-yellow-200 font-semibold underline underline-offset-4" : ""}`
-            }
-          >
-            🛒 Cart
-            {cart.length > 0 && (
-              <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {cart.length}
-              </span>
-            )}
-          </NavLink>
-        )}
-
-        <Link to="/chat" className="hover:opacity-90 transition">AI Chat</Link>
-        {user && (
-          <Link to="/orders" className="hover:opacity-90 transition">Orders</Link>
-        )}
-
-        {user ? (
-          <>
-            <span className="text-sm">
-              Hi, {user.name} ({user.role})
-            </span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="hover:opacity-90 transition">Login</Link>
-            <Link to="/register" className="bg-white text-green-600 px-4 py-2 rounded font-medium hover:opacity-90 transition">Register</Link>
-          </>
-        )}
-      </div>
-
-      <div className="md:hidden">
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-2xl">
           ☰
         </button>
       </div>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-green-700 p-4 space-y-2 md:hidden">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
-          >
+      {/* MOBILE MENU */}
+      {open && (
+        <div className="md:hidden px-4 pb-4 space-y-2">
+
+          <NavLink to="/" className="block" onClick={() => setOpen(false)}>
             Home
           </NavLink>
-          <NavLink
-            to="/products"
-            className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
-          >
+
+          <NavLink to="/products" className="block" onClick={() => setOpen(false)}>
             Products
           </NavLink>
 
-          {user?.role === "farmer" && (
-            <>
-              <NavLink
-                to="/farmer"
-                className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
-              >
-                Dashboard
-              </NavLink>
-              <NavLink
-                to="/my-products"
-                className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
-              >
-                My Products
-              </NavLink>
-            </>
-          )}
-          {user?.role === "vendor" && (
-            <span className="block text-sm opacity-75">🛒 Vendor Account</span>
-          )}
+          <NavLink to="/simulator" className="block" onClick={() => setOpen(false)}>
+            Income
+          </NavLink>
+
+          <NavLink to="/farm-map" className="block" onClick={() => setOpen(false)}>
+            Farm Map
+          </NavLink>
 
           {user?.role === "vendor" && (
-            <NavLink
-              to="/cart"
-              className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
-            >
+            <NavLink to="/cart" className="block" onClick={() => setOpen(false)}>
               Cart ({cart.length})
             </NavLink>
           )}
+
           {user && (
-            <NavLink
-              to="/orders"
-              className={({ isActive }) => `block hover:opacity-90 ${isActive ? "font-semibold underline underline-offset-4" : ""}`}
+            <button
+              onClick={goProfile}
+              className="w-full text-left bg-white text-green-700 px-3 py-2 rounded-md"
             >
-              Orders
-            </NavLink>
+              {user.name}
+            </button>
           )}
+
           {user ? (
-            <button onClick={handleLogout} className="block w-full text-left hover:opacity-90">Logout</button>
+            <button
+              onClick={handleLogout}
+              className="w-full bg-red-500 py-2 rounded-md"
+            >
+              Logout
+            </button>
           ) : (
             <>
-              <Link to="/login" className="block hover:opacity-90">Login</Link>
-              <Link to="/register" className="block hover:opacity-90">Register</Link>
+              <Link to="/login" onClick={() => setOpen(false)}>
+                Login
+              </Link>
+              <Link to="/register" onClick={() => setOpen(false)}>
+                Register
+              </Link>
             </>
           )}
         </div>

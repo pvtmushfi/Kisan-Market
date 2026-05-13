@@ -1,14 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-import { AuthProvider } from "./context/AuthContext";
-import { CartProvider } from "./context/CartContext";
-import { OrderProvider } from "./context/OrderContext";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 // Pages
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Order";
+import Profile from "./pages/Profile";
+
 
 // Farmer Pages
 import FarmerDashboard from "./farmer/FarmerDashboard";
@@ -31,7 +29,7 @@ import { Toaster } from "react-hot-toast";
 
 // Protected Route Component
 function ProtectedRoute({ children, allowedRoles }) {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("currentUser"));
 
   // User not logged in
   if (!user) {

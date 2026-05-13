@@ -1,19 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { useEffect, useState, useContext } from "react";
+import axios from "axios";
 import { CartContext } from "../context/CartContext";
-import { getProducts } from "../services/productService";
-import ProductList from "../product/ProductList";
 
 function Products() {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchParams] = useSearchParams();
-  const { user } = useContext(AuthContext);
-  const { cart, setCart } = useContext(CartContext);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const category = searchParams.get("category");
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -28,88 +21,172 @@ function Products() {
         
         setProducts(fetchedProducts);
       } catch (err) {
-        console.error("Error fetching products:", err);
-        setError("Failed to load products");
-      } finally {
-        setLoading(false);
+        console.log(err);
       }
     };
+
     fetchProducts();
-  }, [category]);
+  }, []);
 
-  const handleAdd = (product, quantity = 1) => {
-    if (!user || user.role !== "vendor") return;
-    
-    const existingItem = cart.find((item) => item.id === product.id);
-    if (existingItem) {
-      const updatedCart = cart.map((item) =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + quantity }
-          : item
-      );
-      setCart(updatedCart);
-      alert(`${product.name} quantity updated in cart.`);
-      return;
-    }
-
-    setCart([...cart, { ...product, quantity }]);
-    alert(`${quantity} x ${product.name} added to cart.`);
-  };
-
-  const getPageTitle = () => {
-    if (category) return `${category} - Fresh from Farmers`;
-    if (!user) return "Fresh Products from Farmers";
-    if (user.role === "farmer") return "Market Products - Farmers Manage Their Listings";
-    if (user.role === "vendor") return "Fresh Products - Buy from Farmers";
-    return "Products";
-  };
-
-  const getPageDescription = () => {
-    if (category) return `Browse ${category.toLowerCase()} directly from local farmers.`;
-    if (!user) return "Browse and buy fresh produce directly from local farmers.";
-    if (user.role === "farmer") return "View all products in the market. Manage your own products from your dashboard.";
-    if (user.role === "vendor") return "Browse fresh produce from local farmers and add items to your cart.";
-    return "";
-  };
-
-  if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading products...</div>;
-  if (error) return <div className="min-h-screen bg-gray-50 flex items-center justify-center text-red-500">{error}</div>;
+  const recommendedProducts = selectedProduct
+    ? products.filter(
+        (p) =>
+          p.category === selectedProduct.category &&
+          p.id !== selectedProduct.id
+      )
+    : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-green-600 text-white py-8 px-6">
-        <h1 className="text-3xl font-bold">{getPageTitle()}</h1>
-        <p className="text-green-100 mt-2">{getPageDescription()}</p>
-        {category && (
-          <p className="text-green-200 mt-1">Showing products in {category} category</p>
-        )}
-        {user ? (
-          <p className="mt-3 text-green-100 text-sm">
-            Logged in as <strong>{user.name}</strong> ({user.role}).
-          </p>
-        ) : (
-          <p className="mt-3 text-green-100 text-sm">
-            Please login or register to buy products from farmers.
-          </p>
-        )}
-      </div>
-      
-      {products.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-6xl mb-4">🛒</div>
-          <h2 className="text-2xl font-bold text-gray-700 mb-2">No products found</h2>
-          <p className="text-gray-500">
-            {category ? `No products available in ${category} category yet.` : "No products available at the moment."}
-          </p>
+    <div className="p-6 flex gap-6">
+
+      {/* LEFT SIDE - PRODUCTS */}
+      <div className="w-full">
+
+        <h1 className="text-2xl font-bold mb-6">
+          All Products
+        </h1>
+
+        <div className="grid md:grid-cols-3 gap-6">
+
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="border rounded-lg shadow p-4 hover:shadow-lg transition"
+            >
+
+              <img
+                src={
+                  product.image ||
+                  "https://via.placeholder.com/300"
+                }
+                className="h-40 w-full object-cover rounded"
+              />
+
+              <h2 className="font-bold mt-2">
+                {product.name}
+              </h2>
+
+              <p className="text-green-600 font-semibold">
+                ₹{product.price}
+              </p>
+
+              <p className="text-sm text-gray-500">
+                {product.category}
+              </p>
+
+              <div className="flex gap-2 mt-3">
+
+                <button
+                  onClick={() => {
+                    addToCart(product);
+                    setSelectedProduct(product);
+                  }}
+                  className="flex-1 bg-green-600 text-white py-2 rounded"
+                >
+                  Add
+                </button>
+
+                <button
+                  onClick={() => setSelectedProduct(product)}
+                  className="flex-1 bg-blue-600 text-white py-2 rounded"
+                >
+                  Details
+                </button>
+
+              </div>
+            </div>
+          ))}
         </div>
-      ) : (
-        <div className="max-w-7xl mx-auto p-6">
-          <ProductList
-  products={products}
-  onAdd={handleAdd}
-/>
+      </div>
+
+      {/* RIGHT SIDE - PRODUCT DETAILS PANEL */}
+      {selectedProduct && (
+        <div className="w-[350px] sticky top-20 h-fit border rounded-lg p-4 shadow-lg bg-white">
+
+          <button
+            onClick={() => setSelectedProduct(null)}
+            className="text-red-500 text-sm mb-2"
+          >
+            ✕ Close
+          </button>
+
+          <img
+            src={selectedProduct.image}
+            className="w-full h-48 object-cover rounded"
+          />
+
+          <h2 className="text-xl font-bold mt-3">
+            {selectedProduct.name}
+          </h2>
+
+          <p className="text-green-600 font-semibold text-lg">
+            ₹{selectedProduct.price}
+          </p>
+
+          <p className="text-gray-600 mt-2">
+            {selectedProduct.description}
+          </p>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Category: {selectedProduct.category}
+          </p>
+
+          <button
+            onClick={() => addToCart(selectedProduct)}
+            className="w-full mt-4 bg-green-600 text-white py-2 rounded"
+          >
+            Add to Cart
+          </button>
+
+          {/* RECOMMENDATIONS */}
+          {recommendedProducts.length > 0 && (
+            <div className="mt-6">
+
+              <h3 className="font-bold mb-2">
+                Similar Products
+              </h3>
+
+              <div className="space-y-2">
+
+                {recommendedProducts.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex gap-2 border p-2 rounded"
+                  >
+
+                    <img
+                      src={item.image}
+                      className="w-12 h-12 object-cover rounded"
+                    />
+
+                    <div className="flex-1">
+
+                      <p className="text-sm font-semibold">
+                        {item.name}
+                      </p>
+
+                      <p className="text-green-600 text-sm">
+                        ₹{item.price}
+                      </p>
+
+                    </div>
+
+                    <button
+                      onClick={() => addToCart(item)}
+                      className="text-xs bg-blue-600 text-white px-2 rounded"
+                    >
+                      Add
+                    </button>
+
+                  </div>
+                ))}
+
+              </div>
+            </div>
+          )}
         </div>
       )}
+
     </div>
   );
 }

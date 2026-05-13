@@ -1,3 +1,4 @@
+import VoiceProductForm from "../components/VoiceProductForm";
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
@@ -100,6 +101,22 @@ function AddProduct() {
 
       <div className="max-w-2xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-lg p-8">
+          <button
+  onClick={() => setShowVoiceForm(true)}
+  className="mb-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+>
+  🎤 बोलकर उत्पाद जोड़ें
+</button>
+
+{showVoiceForm && (
+  <VoiceProductForm
+    onClose={() => setShowVoiceForm(false)}
+    onSuccess={() => {
+      setShowVoiceForm(false);
+      alert("Voice product added successfully!");
+    }}
+  />
+)}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Product Name */}
             <div>

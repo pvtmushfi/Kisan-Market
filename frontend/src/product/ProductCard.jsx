@@ -78,7 +78,7 @@ function ProductCard({ product, onAdd, onDelete }) {
           )}
 
           <p className="text-sm text-gray-600 text-center">
-            🌾 Farmers manage products
+            🌾 Farmer Product Management View
           </p>
         </div>
       );
@@ -128,7 +128,7 @@ function ProductCard({ product, onAdd, onDelete }) {
             Add to Cart
           </button>
 
-          {/* 🔥 REPLACED PAYMENT BUTTON */}
+          {/* View Details */}
           <button
             onClick={toggleDetails}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full font-medium"
@@ -143,7 +143,7 @@ function ProductCard({ product, onAdd, onDelete }) {
   return (
     <div className="border border-gray-200 p-4 rounded-lg shadow hover:shadow-lg bg-white">
 
-      {/* Product Image */}
+      {/* IMAGE */}
       <img
         src={getImageUrl()}
         alt={product.name}
@@ -153,7 +153,7 @@ function ProductCard({ product, onAdd, onDelete }) {
         }}
       />
 
-      {/* Name */}
+      {/* NAME */}
       <h2 className="font-bold text-lg mb-1">
         {product.name}
       </h2>
@@ -185,7 +185,7 @@ function ProductCard({ product, onAdd, onDelete }) {
         </span>
       </div>
 
-      {/* Actions */}
+      {/* ACTIONS */}
       {renderActionButton()}
 
       {/* 📦 DETAILS SECTION */}
@@ -240,7 +240,14 @@ function ProductCard({ product, onAdd, onDelete }) {
           )}
 
           <p>
-            <strong>Farmer:</strong> {product.farmerName}
+            <strong>Product ID:</strong> {product.id || product._id}
+          </p>
+
+          <p>
+            <strong>Added On:</strong>{" "}
+            {product.createdAt
+              ? new Date(product.createdAt).toLocaleDateString()
+              : "N/A"}
           </p>
         </div>
       )}

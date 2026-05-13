@@ -1,10 +1,13 @@
-import express from "express";
-import { getFarmerProducts, updateProduct } from "../controllers/farmerController.js";
-import { protect } from "../middlewares/authMiddleware.js";
+import express from 'express';
+import { getNearbyFarmers, saveLocation } from '../controllers/farmerController.js';
+import { protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get("/products", protect, getFarmerProducts);
-router.put("/:id", protect, updateProduct);
+// Public route - get nearby farmers (no login needed)
+router.get('/nearby', getNearbyFarmers);
+
+// Protected route - save farmer location (requires login)
+router.put('/location', protect, saveLocation);
 
 export default router;

@@ -22,7 +22,6 @@ if (!fs.existsSync(uploadPath)) {
 
 const startServer = async () => {
   try {
-    // Connect MongoDB
     await connectDB();
 
     // Middleware
@@ -42,7 +41,6 @@ const startServer = async () => {
     // Create HTTP Server
     const server = http.createServer(app);
 
-    // Initialize Socket.io
     const io = new Server(server, {
       cors: {
         origin: "*",
@@ -50,7 +48,6 @@ const startServer = async () => {
       },
     });
 
-    // Socket Connection
     io.on("connection", (socket) => {
       console.log("User connected:", socket.id);
 
@@ -77,9 +74,6 @@ const startServer = async () => {
         console.log("User disconnected:", socket.id);
       });
     });
-
-    // Start Server
-    const PORT = config.PORT || 5000;
 
     server.listen(PORT, () => {
       console.log(
